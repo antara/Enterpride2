@@ -18,30 +18,19 @@ import java.util.List;
 public class UserDaoImpl extends BaseDao implements UserDao{
 
     public boolean checkUserPresent(String addUserName) {
-          
-           String u;
-           
-           boolean f=false;
-           try{
-                  u= (String) getSession().createQuery("select username from User where deleted='1' and username='"+addUserName+"'").uniqueResult();
-
-              if(u!=null)
-                  f=true;
-
-
-              }
-           finally{
-
-                  }
-
-           return f;  //To change body of implemented methods use File | Settings | File Templates.
-       }
-
-
+        String u;
+        boolean f=false;
+        try{
+            u= (String) getSession().createQuery("select username from User where deleted='1' and username='"+addUserName+"'").uniqueResult();
+            if(u!=null)
+                f=true;
+        }
+        finally{
+        }
+        return f;  //To change body of implemented methods use File | Settings | File Templates.
+    }
     @Transactional
     public User authenticate(User u) throws LoginException {
-//                    
-        
         User val=(User)getSession().createQuery("from User where username=:user and password=:pass and deleted=:del").setString("user",u.getUsername()).setString("pass",u.getPassword()).setInteger("del",1).uniqueResult();
         if(val==null){
             throw new LoginException("invalid credentials");
@@ -50,15 +39,11 @@ public class UserDaoImpl extends BaseDao implements UserDao{
     }
 
     @Transactional
-  public boolean SaveUser(User u)
+    public boolean SaveUser(User u)
     {
-         try {
-        
-//                    
+        try {
             if(u!=null){
-               getSession().save(u);
-//                
-
+                getSession().save(u);
                 return true;
             }else{
                 return false;
@@ -66,65 +51,34 @@ public class UserDaoImpl extends BaseDao implements UserDao{
         }catch (Exception e){
             e.printStackTrace();
             return false;
-        }finally{
-//           commitTransaction();
         }
     }
 
-    @Transactional
+
     public User findById(Long id){
-        try{
-            
-//            startSessionAndTransaction();
-            return (User)getSession().createQuery("from User where id='"+id+"'").uniqueResult();
-        }finally {
-//            commitTransaction();
-        }
+        return (User)getSession().createQuery("from User where id='"+id+"'").uniqueResult();
+    }
 
 
-
+    public List getUser(){
+        return getSession().createQuery("from User where deleted='1' and user_id <> 1").list();
     }
 
     @Transactional
-    public List getUser(){
-            String hql="from User where deleted='1' and user_id <> 1";
+    public void update(User user)  {
         try{
-//            startSessionAndTransaction();
-        }finally{
-//            commitTransaction();
-        }
-             return getSession().createQuery(hql).list();
-        }
-
-    @Transactional
-       public void update(User user)  {
-
-        try{
-            
-//            startSessionAndTransaction();
-               getSession().update(user);
-            
+            getSession().update(user);
         }catch (Exception e){
             e.printStackTrace();
-
-        }finally{
-//          commitTransaction();
         }
     }
-
     @Transactional
     public void delete(User user)  {
         try{
-            
-//            startSessionAndTransaction();
-                          user.setDeleted(0);
-                getSession().update(user);
-            
+            user.setDeleted(0);
+            getSession().update(user);
         }catch (Exception e){
             e.printStackTrace();
-
-        }finally{
-//          commitTransaction();
         }
     }
 }

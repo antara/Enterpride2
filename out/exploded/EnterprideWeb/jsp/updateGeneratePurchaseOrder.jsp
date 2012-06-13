@@ -41,7 +41,7 @@
                     {
                         $.post('PurchaseOrder.action?getItemDetails', {id:button.value}, function (data) {
                             var result=eval(data);
-                            $('#item'+rowid+'').attr("value",result.name);
+                            $('#item'+rowid+'').attr("value",result.itemCode);
                             $('#uom'+rowid+'').attr("value",result.uom.name);
                             });//end of post funtion
                     }//end of flag==true if
@@ -239,11 +239,11 @@ Purchase Order > Update Purchase Order
         <td colspan="4"><br><div align="left" style="margin-left:10px;">
 				<table width="95%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #000000;" align="left" id="family">
 					<tr>
-						<td width="14%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item Code</span></strong></div></td>
-					    <td width="22%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item name</span></strong></div></td>
-					    <td width="9%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Uom</span></strong></div></td>
+						<td width="14%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item name</span></strong></div></td>
+					    <td width="22%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item Code</span></strong></div></td>
+					    <td width="9%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">UoM</span></strong></div></td>
 					    <td width="12%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Description</span></strong></div></td>
-					    <td width="13%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Order Qty</span></strong></div></td>
+					    <td width="13%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Ordered Qty</span></strong></div></td>
                           <td width="12%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Rate</span></strong></div></td>
 					    <td width="5%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Amount</span></strong></div></td>
                        <td width="2%"  style=" background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;"><img src="/images/Cfthrow.gif"></span></strong></div></td>
@@ -259,11 +259,11 @@ Purchase Order > Update Purchase Order
                                         <c:forEach items="${actionBean.itemidlst}" var="itemidloop" >
                     <c:choose>
                   <c:when test="${purchasedetailarray.item.id eq itemidloop.id}">
-			            <option value ="<c:out value="${purchasedetailarray.item.id}"/>" selected="selected"> <c:out value="${purchasedetailarray.item.itemCode}"/></option>
+			            <option value ="<c:out value="${purchasedetailarray.item.id}"/>" selected="selected"> <c:out value="${purchasedetailarray.item.name}"/></option>
                   </c:when>
 
                   <c:otherwise>
-                <option value ="${itemidloop.id}"><c:out value="${itemidloop.itemCode}"/></option>
+                <option value ="${itemidloop.id}"><c:out value="${itemidloop.name}"/></option>
                   </c:otherwise>
                   </c:choose>
 	      </c:forEach>
@@ -273,7 +273,7 @@ Purchase Order > Update Purchase Order
 					          </div></div></td>
 					       <td style="border-top:1px solid #000000;border-right:1px solid #000000;"><div align="left" style="margin-left:4px;">
 					         <div align="right">
-					           <s:text readonly="readonly" type="text" name="purchasedetailarray[${loop.index}].item.name" value="${purchasedetailarray.item.name}" id="item${loop.index}" class="hello" style="text-align:right;margin-right:2px; width:200px; "  />
+					           <s:text readonly="readonly" type="text" name="purchasedetailarray[${loop.index}].item.itemCode" value="${purchasedetailarray.item.itemCode}" id="item${loop.index}" class="hello" style="text-align:right;margin-right:2px; width:200px; "  />
 					         </div></div></td>
 					       <td style="border-top:1px solid #000000;border-right:1px solid #000000;">
 					         <div align="left" style="margin-left:4px;">

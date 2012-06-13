@@ -11,18 +11,20 @@ import java.util.*;
  */
 public enum EnumModule {
 
-    GRN,
-    REQUISITION,
-    VENDOR,
-    USERS,
-    PURCHASEORDER,
-    ITEM,
-    USERPERMISSIONS,
-    STOREISSUE,
-    ROLEPERMISSIONS,
-    SEARCH,
-    REPORT,
-    MANAGEROLE
+    GoodsReceiptNote,
+    Requisition,
+    Vendor,
+    Users,
+    PurchaseOrder,
+    Item,
+    UserPermissions,
+    StoreIssue,
+    RolePermissions,
+    Search,
+    Report,
+    ManageRole,
+    ApproveGRN,
+    GRNPayments
     ;
 
 }

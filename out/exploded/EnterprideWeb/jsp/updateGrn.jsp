@@ -20,7 +20,7 @@
               
         $.post('Grn.action?getItemDetails', {id:button.value}, function (data) {
         var result=eval(data);
-        $('#item'+rowid+'').attr("value",result.name);
+        $('#item'+rowid+'').attr("value",result.itemCode);
         $('#uom'+rowid+'').attr("value",result.uom.name);
 
     });
@@ -299,9 +299,9 @@ Stock Management > Update Grn
         <td colspan="4"><br><div align="left" style="margin-left:10px;">
 				<table width="95%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #000000;" align="left" id="family">
 					<tr>
-						<td width="14%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item Code</span></strong></div></td>
-					    <td width="22%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item name</span></strong></div></td>
-					    <td width="9%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Uom</span></strong></div></td>
+						<td width="22%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item name</span></strong></div></td>
+					    <td width="14%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item Code</span></strong></div></td>
+					    <td width="9%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">UoM</span></strong></div></td>
 					    <td width="9%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Ord Qty</span></strong></div></td>
                         <td width="10%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Rate/Qty</span></strong></div></td>
 					    <td width="10%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Challan Qty</span></strong></div></td>
@@ -318,16 +318,16 @@ Stock Management > Update Grn
 					        <td style="border-top:1px solid #000000;border-right:1px solid #000000;">
 					         <div align="left" style="margin-left:4px;">
 					          <div align="right">
-                                   <s:select id="itemcode" style="width :80px;background-color:#FFF; " name="grndetailarray[${loop.index}].item.id"  onchange= "return GetItemDetail(this);">
+                                   <s:select id="itemcode" style="width :150px;background-color:#FFF; " name="grndetailarray[${loop.index}].item.id"  onchange= "return GetItemDetail(this);">
                         <option  value="0">---Select Item---</option>
                                         <c:forEach items="${actionBean.itemidlst}" var="itemidloop" >
                     <c:choose>
                   <c:when test="${grndetailarray.item.id eq itemidloop.id}">
-			            <option value ="<c:out value="${grndetailarray.item.id}"/>" selected="selected"> <c:out value="${grndetailarray.item.itemCode}"/></option>
+			            <option value ="<c:out value="${grndetailarray.item.id}"/>" selected="selected"> <c:out value="${grndetailarray.item.name}"/></option>
                   </c:when>
 
                   <c:otherwise>
-                <option value ="${itemidloop.id}"><c:out value="${itemidloop.itemCode}"/></option>
+                <option value ="${itemidloop.id}"><c:out value="${itemidloop.name}"/></option>
                   </c:otherwise>
                   </c:choose>
 			
@@ -339,7 +339,7 @@ Stock Management > Update Grn
 					          </div></div></td>
 					       <td style="border-top:1px solid #000000;border-right:1px solid #000000;"><div align="left" style="margin-left:4px;">
 					         <div align="right">
-					           <s:text type="text" name="itemNamefor" readonly="readonly" value="${grndetailarray.item.name}" id="item${loop.index}" class="hello" style="text-align:right;margin-right:2px; width:150px; "  />
+					           <s:text type="text" name="itemNamefor" readonly="readonly" value="${grndetailarray.item.itemCode}" id="item${loop.index}" class="hello" style="text-align:right;margin-right:2px; width:80px; "  />
 					         </div></div></td>
 					       <td style="border-top:1px solid #000000;border-right:1px solid #000000;">
 					         <div align="left" style="margin-left:4px;">

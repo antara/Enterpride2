@@ -5,6 +5,7 @@ import net.sourceforge.stripes.ajax.JavaScriptResolution;
 import com.erp.pojo.*;
 import com.erp.enums.EnumModule;
 import com.erp.constants.PermissionConstants;
+import com.erp.utils.Converter;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.io.FileInputStream;
 
 
 /**
@@ -36,6 +38,34 @@ public class GrnActionBean extends BaseActionBean{
     private String hdnvalue;
     private Double tot;
               protected long  iddrop;
+     private String content;
+    private String grnnopdf;
+    private String vendorName;
+
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getGrnnopdf() {
+        return grnnopdf;
+    }
+
+    public void setGrnnopdf(String grnnopdf) {
+        this.grnnopdf = grnnopdf;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
 
     public Double getTot() {
         return tot;
@@ -54,7 +84,7 @@ public class GrnActionBean extends BaseActionBean{
     }
 
     public PurchaseOrder getPurchaseOrder() {
-      
+
         return purchaseOrder;
     }
 
@@ -64,7 +94,7 @@ public class GrnActionBean extends BaseActionBean{
     public Grn getGrn() {
           if(id != 0) {
 
-              
+
                return grndao.findById(id);
           }
         return grn;
@@ -158,7 +188,7 @@ public class GrnActionBean extends BaseActionBean{
    }
    //Get dropdown item list
     public Resolution getItemDetails(){
-     
+
        item= itemdao.findById(id);
         return new JavaScriptResolution(item);
     }
@@ -198,6 +228,7 @@ public class GrnActionBean extends BaseActionBean{
         return new ForwardResolution("jsp/addGrn.jsp");
     }
 
+    @RolesAllowed({PermissionConstants.ADD_APPROVEGRN,PermissionConstants.ADD_GRNPAYMENTS})
     public Resolution verify(){
 
         grnlst=grndao.unverifiedGrnList();
@@ -207,7 +238,7 @@ public class GrnActionBean extends BaseActionBean{
         return new ForwardResolution("jsp/verifyGrn.jsp");
     }
 
-
+    @RolesAllowed({PermissionConstants.ADD_APPROVEGRN,PermissionConstants.ADD_GRNPAYMENTS})
     public Resolution proceedForPayment(){
         System.out.println("id of proceed for payment "+id);
         grn=grndao.findById(id);
@@ -215,7 +246,7 @@ public class GrnActionBean extends BaseActionBean{
               {
                     hdnvalue="receipt";
 
-                   
+
               }
         hdnvalue="receipt";
         //grn.setVerified("Y");
@@ -240,9 +271,9 @@ public class GrnActionBean extends BaseActionBean{
            tot=tot+it.next().getValue();
        }
 
-       System.out.println("total "+tot);
 
-      
+
+
        return new ForwardResolution("jsp/receipt/verifyGrnSlip.jsp");
    }
 
@@ -267,12 +298,14 @@ public class GrnActionBean extends BaseActionBean{
        return new ForwardResolution("jsp/receipt/verifiedGrnSlip.jsp");
    }
 
+    @RolesAllowed({PermissionConstants.ADD_GRNPAYMENTS})
     public Resolution forAccountant(){
         grnlst=grndao.verifiedGrnList();
 
          return new ForwardResolution("jsp/grnPaymentAccountant.jsp");
     }
 
+    @RolesAllowed({PermissionConstants.ADD_GRNPAYMENTS})
     public Resolution makePayment(){
         System.out.println("id "+id);
         grn=grndao.findById(id);
@@ -284,27 +317,40 @@ public class GrnActionBean extends BaseActionBean{
          return new ForwardResolution("jsp/grnPaymentAccountant.jsp");
 
     }
+
+    @RolesAllowed({PermissionConstants.ADD_GRNPAYMENTS})
 public Resolution success(){
-        System.out.println("id "+id);
+
        grndao.setPaymentStatusSuccess(getGrn().getId());
-       // grn.setPaymentStatus("Success");
-        //grndao.update(grn,grn.getGrndetailarray());
+
         grnlst=grndao.verifiedGrnList();
-        System.out.println("list "+grnlst);
+
          return new ForwardResolution("jsp/grnPaymentAccountant.jsp");
 
     }
+
+    @RolesAllowed({PermissionConstants.ADD_APPROVEGRN})
 public Resolution verification(){
-         System.out.println("iiiiiiiiiiddddddddd"+getGrn().getId());
+
          grndao.setVerifiedToY(getGrn().getId());
         grnlst=grndao.unverifiedGrnList();
      hdnvalue="test12";
-        System.out.println("list "+grnlst);
-        //  return new JavaScriptResolution(hdnvalue);
-         //return new ForwardResolution("jsp/verifyGrn.jsp");
+
            return new ForwardResolution("jsp/verifyGrn.jsp");
     }
+    public Resolution print(){
+        String path=null;
+        FileInputStream sis=null;
+        try{
+            path= Converter.convert(content,vendorName+"_"+grnnopdf);
+            sis=new FileInputStream(path);
+        }catch(Exception e){
+            System.out.println("achtung "+e.getMessage());
+        }
 
-    
+
+        return new StreamingResolution("application/pdf",sis);
+    }
+
 }
 

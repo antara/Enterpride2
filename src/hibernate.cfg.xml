@@ -34,5 +34,7 @@
         <mapping class="com.erp.pojo.RolePermissions"/>
         <mapping class="com.erp.pojo.PurchaseOrder"/>
         <mapping class="com.erp.pojo.PurchaseOrderDetail"/>
+          <mapping class="com.erp.pojo.Traildate"/>
+         <mapping class="com.erp.pojo.Terms"/>
 	</session-factory>
 </hibernate-configuration>

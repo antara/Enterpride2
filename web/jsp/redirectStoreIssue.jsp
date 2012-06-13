@@ -10,32 +10,13 @@
 <link rel="stylesheet" type="text/css" href="../css/stylesheet.css"/>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<c:set var = "setvalue" value="popupvalue"/>
 
-          <c:if test="${listofstoreissue.popup eq setvalue}">
-<script type="text/javascript" language="javascript">
-
-function OpenPopup(){
-	var w = 770;
-	var h = 450;
-	var winl = (screen.width-w)/2;
-	var wint = (screen.height-h)/2;
-	if (winl < 0) winl = 0;
-	if (wint < 0) wint = 0;
-	 var page = "/StoreIssue.action?redirectpopup";
-	windowprops = "height="+h+",width="+w+",top="+ wint +",left="+ winl +",location=no,"
-	+ "scrollbars=yes,menubars=no,toolbars=no,resizable=no,status=yes";
-	window.open(page, "Popup", windowprops);
-}
-	window.onLoad =OpenPopup();
-
-</script>  </c:if>
 <script type="text/javascript">
             function GetItemDetail(button) {
                    var rowid=button.name.substring(button.name.indexOf("[")+1,button.name.indexOf("]"));
         $.post('StoreIssue.action?getItemDetails', {id:button.value}, function (data) {
         var result=eval(data);
-        $('#item'+rowid+'').attr("value",result.name);
+        $('#item'+rowid+'').attr("value",result.itemCode);
         $('#uom'+rowid+'').attr("value",result.uom.name);
 
     });
@@ -45,22 +26,11 @@ function OpenPopup(){
                    var rowid=button.name.substring(button.name.indexOf("[")+1,button.name.indexOf("]"));
              //   alert("ITEMCODE :"+$('#itemcode'+rowid+'').val());
              // alert("in function"+$('#itemcode'+rowid+'').val());
-        $.post('StoreIssue.action?getDailyStockDetails', {itemcode:$('#itemcode'+rowid+'').val()}, function (data) {
-         var result=eval(data);
 
-
-             if(data<=0)
-             {
-                alert("This item is out of stock..");
-                $('#issueQty'+rowid+'').val("");
-                 return true;
-             }
-            else
-
-            if(parseFloat($('#issueQty'+rowid+'').val())>parseFloat(data))
+            if(parseFloat($('#issueQty'+rowid+'').val())>parseFloat($('#availableQuantity'+rowid+'').val()))
             {
 
-                alert("Issue Quantity Can't Be Greator for item "+$('#itemcode'+rowid+'').val()+",The Closing Qty For this item is "+result+"");
+                alert("issued quantity can't be greater than available quantity for item "+$('#item'+rowid+'').val());
                 $('#issueQty'+rowid+'').focus();
                 $('#issueQty'+rowid+'').val("");
             }
@@ -68,9 +38,8 @@ function OpenPopup(){
 
 
 
-    });
-    return false;
-    }
+            }
+            
       $(document).ready(function(){
      $("#getstoreissuedetail").click(function(){
                if ($("#requisitionid").val()=="0"){
@@ -124,7 +93,8 @@ function OpenPopup(){
 </script>
 <s:useActionBean beanclass="com.erp.action.StoreIssueActionBean" var="listofstoreissue" event="redirectLink"></s:useActionBean>
 <%
-       request.setAttribute("itemidlst",listofstoreissue.getItemidlst());
+    
+    request.setAttribute("itemidlst",listofstoreissue.getItemidlst());
     request.setAttribute("requisition",listofstoreissue.getRequisition());
 %>
 
@@ -160,11 +130,11 @@ Store Issue
            <td colspan="4"><br><div align="left" style="margin-left:10px;">
                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #000000;" align="left" id="family">
                        <tr>
-                           <td width="27%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item Code</span></strong></div></td>
-                           <td width="25%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item name</span></strong></div></td>
+                           <td width="25%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item name</span></strong></div></td>
+                           <td width="27%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item Code</span></strong></div></td>
                           <td width="22%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Uom</span></strong></div></td>
-                          <td width="26%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Cost Centre</span></strong></div></td>
-                          <td width="26%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Reqested Qty</span></strong></div></td>
+                          <td width="26%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Available Quantity</span></strong></div></td>
+                          <td width="26%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Requested Qty</span></strong></div></td>
                           <td width="26%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Issued Qty</span></strong></div></td>
 
                          </tr>
@@ -180,11 +150,11 @@ Store Issue
                                            <c:forEach items="${itemidlst}" var="itemidloop" >
                        <c:choose>
                      <c:when test="${requisitiondetailarray.item.id eq itemidloop.id}">
-                           <option value ="<c:out value="${requisitiondetailarray.item.id}"/>" selected="selected"> <c:out value="${requisitiondetailarray.item.itemCode}"/></option>
+                           <option value ="<c:out value="${requisitiondetailarray.item.id}"/>" selected="selected"> <c:out value="${requisitiondetailarray.item.name}"/></option>
                      </c:when>
 
                      <c:otherwise>
-                   <option value ="${itemidloop.id}"><c:out value="${itemidloop.itemCode}"/></option>
+                   <option value ="${itemidloop.id}"><c:out value="${itemidloop.name}"/></option>
                      </c:otherwise>
                      </c:choose>
 
@@ -196,7 +166,7 @@ Store Issue
                                  </div></div></td>
                               <td style="border-top:1px solid #000000;border-right:1px solid #000000;"><div align="left" style="margin-left:4px;">
                                 <div align="right">
-                                  <s:text name="storeissuedetailarray[${loop.index}].item.name" readonly="readonly" value="${requisitiondetailarray.item.name}" id="item${loop.index}" class="hello" style="text-align:right;margin-right:2px; width:200px; "  />
+                                  <s:text name="storeissuedetailarray[${loop.index}].item.name" readonly="readonly" value="${requisitiondetailarray.item.itemCode}" id="item${loop.index}" class="hello" style="text-align:right;margin-right:2px; width:90px; "  />
                                 </div></div></td>
                               <td style="border-top:1px solid #000000;border-right:1px solid #000000;">
                                 <div align="left" style="margin-left:4px;">
@@ -206,7 +176,7 @@ Store Issue
                                 <td style="border-top:1px solid #000000;border-right:1px solid #000000;">
                                 <div align="left" style="margin-left:4px;">
                                 <div align="right">
-                                   <s:text  name="storeissuedetailarray[${loop.index}].costCentre"  style="text-align:right;margin-right:2px;width:100px; "/>
+                                   <s:text  name="availableQuantity[${loop.index}]" id="availableQuantity${loop.index}" value="${requisitiondetailarray.availableQuantity}" readonly="readonly" style="text-align:right;margin-right:2px;width:100px; "/>
                                 </div></div></td>
                                   <td style="border-top:1px solid #000000;border-right:1px solid #000000;">
                                 <div align="left" style="margin-left:4px;">

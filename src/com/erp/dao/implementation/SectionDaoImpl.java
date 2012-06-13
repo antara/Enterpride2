@@ -20,34 +20,19 @@ import com.wideplay.warp.persist.Transactional;
  * To change this template use File | Settings | File Templates.
  */
 public class SectionDaoImpl extends BaseDao implements SectionDao{
- 
-    @Transactional
-      public List getSection(){
-
-         String hql="from Section where deleted='1'";
-         try {
-
-                   
-
-         }catch (Exception e){
-             e.printStackTrace();
-
-         }finally{
-           //  s.close();
-         }
-          return getSession().createQuery(hql).list();
-     }
 
     @Transactional
-      public boolean SaveSection(Section section)
+    public List getSection(){
+        return getSession().createQuery("from Section where deleted='1'").list();
+    }
+
+    @Transactional
+    public boolean SaveSection(Section section)
 
     {
-     try {
-
-                    
+        try {
             if(section!=null){
-               getSession().save(section);
-                
+                getSession().save(section);
                 return true;
             }else{
                 return false;
@@ -55,52 +40,30 @@ public class SectionDaoImpl extends BaseDao implements SectionDao{
         }catch (Exception e){
             e.printStackTrace();
             return false;
-        }finally{
-          //  getSession().close();
         }
 
     }
-                  @Transactional
+    @Transactional
     public void delete(Section section){
         try{
-        
             section.setDeleted(0);
-               getSession().update(section);
-                
-
-
+            getSession().update(section);
         }catch (Exception e){
             e.printStackTrace();
-          
-        }finally{
-          //  getSession().close();
+
         }
     }
-                                @Transactional
+
     public Section findById(Long id){
-         Section ud=null;
-           try {
-                                 
-
         return (Section)getSession().createQuery("from Section where id='"+id+"'").uniqueResult();
-           }catch (Exception e){
-
-           }
-        return null;
     }
-                                              @Transactional
-      public void update(Section section){
+    @Transactional
+    public void update(Section section){
         try{
-        
-               getSession().update(section);
-                
-
-
+            getSession().update(section);
         }catch (Exception e){
             e.printStackTrace();
 
-        }finally{
-          //  getSession().close();
         }
     }
- }
+}

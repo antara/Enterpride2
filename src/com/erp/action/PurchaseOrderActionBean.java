@@ -1,15 +1,14 @@
 package com.erp.action;
 
-import com.erp.pojo.Vendor;
-import com.erp.pojo.Item;
-import com.erp.pojo.PurchaseOrder;
-import com.erp.pojo.PurchaseOrderDetail;
+import com.erp.pojo.*;
 import com.erp.constants.PermissionConstants;
+import com.erp.utils.Converter;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.SyncFailedException;
+import java.io.FileInputStream;
 
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.ajax.JavaScriptResolution;
@@ -29,7 +28,42 @@ public class PurchaseOrderActionBean extends BaseActionBean{
      private List<Item> itemidlst;
      private List<PurchaseOrder> purchaseorderlst;
     private Item item;
- 
+    private String content;
+    private String purchaseOrderNumber;
+    private String vendorName;
+    private Terms term;
+
+    public Terms getTerm() {
+        return term;
+    }
+
+    public void setTerm(Terms term) {
+        this.term = term;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getPurchaseOrderNumber() {
+        return purchaseOrderNumber;
+    }
+
+    public void setPurchaseOrderNumber(String purchaseOrderNumber) {
+        this.purchaseOrderNumber = purchaseOrderNumber;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
 
     private List<PurchaseOrderDetail> purchasedetailarray = new ArrayList<PurchaseOrderDetail>();
        private PurchaseOrder purchaseOrder;
@@ -214,4 +248,34 @@ public class PurchaseOrderActionBean extends BaseActionBean{
           purchaseOrder=purchaseorderdao.findById(getId());
        return new ForwardResolution("jsp/printPurchaseOrder.jsp");
    }
+    public Resolution print(){
+        String path=null;
+        FileInputStream sis=null;
+        try{
+            path= Converter.convert(content,vendorName+"_"+purchaseOrderNumber);
+            sis=new FileInputStream(path);
+        }catch(Exception e){
+            System.out.println("achtung "+e.getMessage());
+        }
+
+
+        return new StreamingResolution("application/pdf",sis);
+    }
+    public Resolution terms()
+   {          System.out.println("id"+id);
+         purchaseOrder=purchaseorderdao.findById(getId());
+       System.out.println("gggggggggg"+purchaseOrder);
+       return new ForwardResolution("jsp/receipt/termsPurchaseOrder.jsp");
+   }
+     public Resolution saveTerm()
+   {          
+
+       termdao.SaveTerm(term);
+        purchaseOrder=purchaseorderdao.findById(getId());
+        System.out.println("jyyu"+purchaseOrder);
+       term=termdao.findByMaxId();
+          System.out.println("jyyu"+term);
+       return new ForwardResolution("jsp/receipt/purchaseOrderSlip.jsp");
+   }
+
 }

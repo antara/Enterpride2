@@ -7,11 +7,11 @@ import com.erp.pojo.*;
 import com.erp.utils.BaseUtils;
 import com.wideplay.warp.persist.Transactional;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.Date;
+import java.util.*;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.text.DateFormat;
 
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.Query;
@@ -29,122 +29,131 @@ public class StoreIssueDaoImpl extends BaseDao implements StoreIssueDao{
     @Transactional
     public void update(StoreIssue storeissue,List<StoreIssueDetail> storeissuedetailarray) {
         try{
-               for(Iterator<StoreIssueDetail> i=storeissuedetailarray.iterator();i.hasNext();){
-                        StoreIssueDetail s=(StoreIssueDetail)i.next();
-                        if(s==null){
-                            i.remove();
-                        }
-                        else if(s.getIssueQty()==0){
-                            i.remove();
-                        }
-
-
-             }
-
-                storeissue.setStoreissuedetailarray(storeissuedetailarray);
-                
-                getSession().update(storeissue);
-                
+            for(Iterator<StoreIssueDetail> i=storeissuedetailarray.iterator();i.hasNext();){
+                StoreIssueDetail s=(StoreIssueDetail)i.next();
+                if(s==null){
+                    i.remove();
+                }
+                else if(s.getIssueQty()==0){
+                    i.remove();
+                }
             }
+            storeissue.setStoreissuedetailarray(storeissuedetailarray);
+            getSession().update(storeissue);
+        }
         catch (Exception e){
             e.printStackTrace();
         }
-        finally{
+    }
 
-        }
-   }
-    @Transactional
     public List getRequisition(){
-             String hql="from Requisition";
-             try {
-                     
-             }catch (Exception e){
-                 e.printStackTrace();
-
-             }finally{
-
-             }
-              return getSession().createQuery(hql).list();
-            }
+        return getSession().createQuery("From Requisition").list();
+    }
 
     @Transactional
-   public boolean SaveStoreIssue(StoreIssue storeissue, List<StoreIssueDetail> storeissuedetail) {
-     try {
-           for(Iterator<StoreIssueDetail> i=storeissuedetail.iterator();i.hasNext();){
-             StoreIssueDetail r=(StoreIssueDetail)i.next();
-               if(r==null){
-                 i.remove();
-                   continue;
-               }else if(r.getIssueQty()==0){
-                 i.remove();
-                   continue;
-             }
+    public boolean SaveStoreIssue(StoreIssue storeissue, List<StoreIssueDetail> storeissuedetail) {
+        try {
+            for(Iterator<StoreIssueDetail> i=storeissuedetail.iterator();i.hasNext();){
+                StoreIssueDetail r=(StoreIssueDetail)i.next();
+                if(r==null){
+                    i.remove();
+                    continue;
+                }else if(r.getIssueQty()==0){
+                    i.remove();
+                    continue;
+                }
 
-               Query strQuerydb = getSession().createSQLQuery("Select id,closing_quantity,issued_quantity,open_quantity,received_quantity,create_date from daily_stock where item_id='"+r.getItem().getId()+"'");
-                  List<?> lst1 = strQuerydb.list();
-            Iterator idb=lst1.iterator();
-            BigInteger id=null;
-             double closing_quantity=0,issued_quantity=0,open_quantity=0,received_quantity=0;
-           // Date datedb=null;
-              String sst = null,datedb=null;
-            while (idb.hasNext()){
-                Object[] rowData=(Object[])idb.next();
-                   id=(BigInteger)rowData[0];
-                     closing_quantity=(Double)rowData[1];
-                 issued_quantity=(Double)rowData[2];
-                 open_quantity=(Double)rowData[3];
-                 received_quantity=(Double)rowData[4];
-                        datedb = (rowData[5].toString()).substring(0,10);
-            }
+                Query strQuerydb = getSession().createSQLQuery("Select id,closing_quantity,issued_quantity,open_quantity,received_quantity,create_date from daily_stock where item_id='"+r.getItem().getId()+"'");
+                List<?> lst1 = strQuerydb.list();
+                Iterator idb=lst1.iterator();
+                BigInteger id=null;
+                double closing_quantity=0,issued_quantity=0,open_quantity=0,received_quantity=0;
+// Date datedb=null;
+                String sst = null,datedb=null;
+                Date   datewithtime=null;
+                while (idb.hasNext()){
+                    Object[] rowData=(Object[])idb.next();
+                    id=(BigInteger)rowData[0];
+                    closing_quantity=(Double)rowData[1];
+                    issued_quantity=(Double)rowData[2];
+                    open_quantity=(Double)rowData[3];
+                    received_quantity=(Double)rowData[4];
+                    datedb = (rowData[5].toString()).substring(0,10);
+                    datewithtime=(Date)rowData[5] ;
+                }
 
-                 if(BaseUtils.getCurrentTimestamp().equals(datedb)){
+                if(BaseUtils.getCurrentTimestamp().equals(datedb)){
 
-                     String idstg=id.toString();
-                   long id1ong=Long.parseLong(idstg);
-                  DailyStockRecord dailystock = (DailyStockRecord) getSession().get(DailyStockRecord.class, id1ong);
+                    String idstg=id.toString();
+                    long id1ong=Long.parseLong(idstg);
+                    DailyStockRecord dailystock = (DailyStockRecord) getSession().get(DailyStockRecord.class, id1ong);
 
-              dailystock.setOpenQuantity(open_quantity);
-               dailystock.setReceivedQuantity(received_quantity);
-                dailystock.setIssuedQuantity(issued_quantity+r.getIssueQty());
-                dailystock.setItem(r.getItem());
-                dailystock.setClosingQuantity(closing_quantity-r.getIssueQty());
-                   if (dailystock.getDate() == null) dailystock.setDate(new Date());
-                getSession().update(dailystock);
+                    dailystock.setOpenQuantity(open_quantity);
+                    dailystock.setReceivedQuantity(received_quantity);
+                    dailystock.setIssuedQuantity(issued_quantity+r.getIssueQty());
+                    dailystock.setItem(r.getItem());
+                    dailystock.setClosingQuantity(closing_quantity-r.getIssueQty());
+                    if (dailystock.getDate() == null) dailystock.setDate(new Date());
+                    getSession().update(dailystock);
 
                 }
                 else{
 
-                      DailyStockRecord dailystock=new DailyStockRecord();
-              dailystock.setOpenQuantity(closing_quantity);
-               dailystock.setReceivedQuantity(0);
-                dailystock.setIssuedQuantity(r.getIssueQty());
-                dailystock.setItem(r.getItem());
-                dailystock.setClosingQuantity(closing_quantity-r.getIssueQty());
-                   if (dailystock.getDate() == null) dailystock.setDate(new Date());
-                getSession().save(dailystock);
+                    Date convertedDate = new Date();
+
+
+
+                    Calendar cal1 = GregorianCalendar.getInstance();
+                    cal1.setTime(convertedDate);
+                    Calendar cal2 = GregorianCalendar.getInstance();
+                    cal2.setTime(datewithtime);
+
+
+                    int r1=daysBetween(cal2.getTime(),cal1.getTime());
+                    System.out.println("diff "+r);
+                    for(int e=1;e<r1;e++){
+                        DailyStockRecord dailystock=new DailyStockRecord();
+                        dailystock.setOpenQuantity(closing_quantity);
+                        dailystock.setReceivedQuantity(0);
+                        dailystock.setIssuedQuantity(0);
+                        dailystock.setItem(r.getItem());
+                        dailystock.setClosingQuantity(closing_quantity);
+                        dailystock.setDate(cal2.getTime());
+                        getSession().save(dailystock);
+
+                    }
+
+                    DailyStockRecord dailystock=new DailyStockRecord();
+                    dailystock.setOpenQuantity(closing_quantity);
+                    dailystock.setReceivedQuantity(0);
+                    dailystock.setIssuedQuantity(r.getIssueQty());
+                    dailystock.setItem(r.getItem());
+                    dailystock.setClosingQuantity(closing_quantity-r.getIssueQty());
+                    if (dailystock.getDate() == null) dailystock.setDate(new Date());
+                    getSession().save(dailystock);
                 }
-               
-         }
-            
+
+            }
+
             if(storeissue!=null){
-                 if (storeissue.getIssueDate() == null) storeissue.setIssueDate(new Date());
-                // StoreIssue q=(StoreIssue)getSession().createQuery("select max(id) from StoreIssue").uniqueResult();
-                   Long q=(Long)getSession().createQuery("select max(id) from StoreIssue").uniqueResult();
-                        //int mId=m.getMemberId();
+                if (storeissue.getIssueDate() == null) storeissue.setIssueDate(new Date());
+// StoreIssue q=(StoreIssue)getSession().createQuery("select max(id) from StoreIssue").uniqueResult();
+                Long q=(Long)getSession().createQuery("select max(id) from StoreIssue").uniqueResult();
+//int mId=m.getMemberId();
 
-                        if(q==null)
-                        {
-                         storeissue.setId(1000l);
-                        }
-                        else
-                        {
+                if(q==null)
+                {
+                    storeissue.setId(1000l);
+                }
+                else
+                {
 
-                           storeissue.setId(q+1);
+                    storeissue.setId(q+1);
 
-                        }
-                        storeissue.setStoreissuedetailarray(storeissuedetail);
+                }
+                storeissue.setStoreissuedetailarray(storeissuedetail);
                 getSession().save(storeissue);
-                
+
                 return true;
             }else{
                 return false;
@@ -153,258 +162,178 @@ public class StoreIssueDaoImpl extends BaseDao implements StoreIssueDao{
             e.printStackTrace();
             return false;
         }finally{
-          //  getSession().close();
+//  getSession().close();
         }
 
     }
 
-    @Transactional
+
     public StoreIssue findById(long id) {
-          StoreIssue ud=null;
-               try {
-                        
-                        return (StoreIssue)getSession().createQuery("from StoreIssue where requisition_id='"+id+"'").uniqueResult();
-               }catch (Exception e){
-
-               }
-            return null;
+        return (StoreIssue)getSession().createQuery("from StoreIssue where id='"+id+"'").uniqueResult();
     }
 
-    @Transactional
+
     public List requisitionIds() {
-        List l=null;
-        String hql="SELECT r.id FROM requisition r LEFT OUTER JOIN storeissue s on r.id=s.requisition_id WHERE s.requisition_id IS NULL";
-        try {
-                    
-                    l=getSession().createSQLQuery(hql).list();
-            
-                    return l;
-        }catch (Exception e){
-                    e.printStackTrace();
-        }
-        finally{
-        }
-        return null;
-   }
-
-    @Transactional
+        return getSession().createSQLQuery("SELECT r.id FROM requisition r LEFT OUTER JOIN storeissue s on r.id=s.requisition_id WHERE s.requisition_id IS NULL").list();
+    }
     public List issuedids() {
-        List l=null;
-        String hql="SELECT DISTINCT s.requisition_id FROM requisition r LEFT OUTER JOIN storeissue s on (r.id=s.requisition_id) WHERE s.requisition_id IS NOT NULL and issue_date like '"+ BaseUtils.getCurrentTimestamp()+"%'";
-       try {
-                 
-                 l=getSession().createSQLQuery(hql).list();
-                 return l;
-       }catch (Exception e){
-                e.printStackTrace();
-       }finally{
-       }
-       return null;
+        return getSession().createSQLQuery("SELECT DISTINCT s.requisition_id FROM requisition r LEFT OUTER JOIN storeissue s on (r.id=s.requisition_id) WHERE s.requisition_id IS NOT NULL and issue_date like '"+ BaseUtils.getCurrentTimestamp()+"%'").list();
     }
 
-    @Transactional
-     public List<StoreIssue> searchByName(Long  n){
-        try {
-                          
 
-                  }catch (Exception e){
-
-                  }
-                return (List<StoreIssue>)getSession().createQuery("FROM StoreIssue WHERE id='"+n+"'").list();
-           }
-
-
-    @Transactional
+    public List<StoreIssue> searchByName(Long  n){
+        return (List<StoreIssue>)getSession().createQuery("FROM StoreIssue WHERE id='"+n+"'").list();
+    }
     public Double getDailyStockVal(Double itemcode) {
         {
-                double closing_quantity=0;
-         try {
-
-                         
-              Query strQuerydb = getSession().createSQLQuery("Select closing_quantity,issued_quantity from daily_stock where item_id='"+itemcode+"'");
-                  List<?> lst1 = strQuerydb.list();
-            Iterator idb=lst1.iterator();
+            double closing_quantity=0;
+            try {
 
 
-            while (idb.hasNext()){
-                Object[] rowData=(Object[])idb.next();
+                Query strQuerydb = getSession().createSQLQuery("Select closing_quantity,issued_quantity from daily_stock where item_id='"+itemcode+"'");
+                List<?> lst1 = strQuerydb.list();
+                Iterator idb=lst1.iterator();
 
-                     closing_quantity=(Double)rowData[0];
 
+                while (idb.hasNext()){
+                    Object[] rowData=(Object[])idb.next();
+
+                    closing_quantity=(Double)rowData[0];
+
+                }
+
+
+            }catch (Exception e){
+                e.printStackTrace();
+
+            }finally{
+//  s.close();
             }
 
 
-                 }catch (Exception e){
-                     e.printStackTrace();
-
-                 }finally{
-                   //  s.close();
-                 }
-
-
-                  //return (Long)getSession().createQuery("From DailyStockRecord WHERE  item.id=itemcode AND date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").uniqueResult();
-                  return closing_quantity;
-            }
+//return (Long)getSession().createQuery("From DailyStockRecord WHERE  item.id=itemcode AND date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").uniqueResult();
+            return closing_quantity;
+        }
     }
 
-                  @Transactional
+    @Transactional
     public List<Long> allStoreIssue() {
-                  String hql="Select id from StoreIssue";
-                // List list=null;
-                 try {
 
-                         
-
-
-                 }catch (Exception e){
-                     e.printStackTrace();
-
-                 }finally{
-                   //  s.close();
-                 }
-                  return getSession().createQuery(hql).list();
-            }
+        return getSession().createQuery("Select id from StoreIssue").list();
+    }
 
 
     @Transactional
     public StoreIssue latestStoreIssue(){
-         String hql="from StoreIssue where id=(select max(id) from StoreIssue)";
-        try {
-         
-         }catch (Exception e){
-             e.printStackTrace();
 
-         }finally{
-           //  s.close();
-         }
-          return (StoreIssue)getSession().createQuery(hql).uniqueResult();
+        return (StoreIssue)getSession().createQuery("from StoreIssue where id=(select max(id) from StoreIssue)").uniqueResult();
     }
 
     @Transactional
-	public List<DailyStockRecord> getDailyStockDate() {
+    public List<DailyStockRecord> getDailyStockDate() {
         {
-         try {
-
-                         
-
-                 }catch (Exception e){
-                     e.printStackTrace();
-
-                 }finally{
-                   //  s.close();
-                 }
-
-                                                                                                                                //"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'
-                  //return (Long)getSession().createQuery("From DailyStockRecord WHERE  item.id=itemcode AND date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").uniqueResult();
-                  return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").list();
-                //  return getSession().createQuery("From DailyStockRecord WHERE date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").list();
-            }
+            return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").list();
+        }
     }
 
     @Transactional
- public List<DailyStockRecord> getDailyStockDate(String s) {
-        {
-         try {
-
-                         
-
-                 }catch (Exception e){
-                     e.printStackTrace();
-
-                 }finally{
-                   //  s.close();
-                 }
-
-                                                                                                                                //"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'
-                  //return (Long)getSession().createQuery("From DailyStockRecord WHERE  item.id=itemcode AND date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").uniqueResult();
-                  return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+s+"%'").list();
-                //  return getSession().createQuery("From DailyStockRecord WHERE date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").list();
-            }
+    public List<DailyStockRecord> getDailyStockDate(String s) {
+        return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+s+"%'").list();
     }
-
-
     @Transactional
- public List<DailyStockRecord> getDailyStockMonth(int month, int year) {
-        {
-         try {
+    public List<DailyStockRecord> getDailyStockMonth(int month, int year) {
 
-                         
+        if(month<=9)
+            return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+year+"-"+0+month+"%'").list();
+        else
+            return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+year+"-"+month+"%'").list();
 
-                 }catch (Exception e){
-                     e.printStackTrace();
-
-                 }finally{
-                   //  s.close();
-                 }
-
-                                                                                                                                //"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'
-                  //return (Long)getSession().createQuery("From DailyStockRecord WHERE  item.id=itemcode AND date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").uniqueResult();
-                if(month<=9)
-                  return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+year+"-"+0+month+"%'").list();
-                else
-                    return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+year+"-"+month+"%'").list();                    
-                //  return getSession().createQuery("From DailyStockRecord WHERE date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").list();
-            }
     }
-                  @Transactional
-public List<DailyStockRecord> getDailyStockYear(int year) {
-        {
-         try {
+    @Transactional
+    public List<DailyStockRecord> getDailyStockYear(int year) {
 
-                         
+        return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+year+"-%'").list();
 
-                 }catch (Exception e){
-                     e.printStackTrace();
-
-                 }finally{
-                   //  s.close();
-                 }
-            return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date LIKE '"+year+"-%'").list();
-
-            }
     }
 
     @Transactional
-public List getDailyStockByItemCode(String itemcodetxt)
-{
-    List results;
-    String sql="SELECT d.id,d.create_date,i.name,i.item_code,d.closing_quantity,d.issued_quantity,d.open_quantity,d.received_quantity,d.remark FROM daily_stock d LEFT OUTER JOIN item i on d.item_id=i.id WHERE i.item_code='"+itemcodetxt+"'";
-//    String hql="FROM DailyStockRecord d LEFT OUTER JOIN Item i on d.item.id=i.id WHERE i.itemCode='"+itemcodetxt+"'";
-        //String hql="FROM DailyStockRecord as d LEFT OUTER JOIN Item as i  WHERE itemCode='"+itemcodetxt+"'";\
-            {
-         try {
-                
-             }catch (Exception e){
-                  e.printStackTrace();
-             }finally{
-               //  s.close();
-             }
-                Query query = getSession().createSQLQuery(sql);
-                query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-                results = query.list();
-                return results;//getSession().createSQLQuery(sql).list();
+    public List getDailyStockByItemCode(String itemcodetxt,int month, int year)
+    {
+        List results;    String sql="";
+        System.out.println(month);
+        System.out.println(year);
+        if(month<=9)
+        {
+            sql="SELECT d.id,d.create_date,i.name,i.item_code,d.closing_quantity,d.issued_quantity,d.open_quantity,d.received_quantity,d.remark FROM daily_stock d LEFT OUTER JOIN item i on d.item_id=i.id WHERE i.name='"+itemcodetxt+"' and  create_date LIKE '"+year+"-"+0+month+"%'";
+        }
+        else
+        {
+            sql="SELECT d.id,d.create_date,i.name,i.item_code,d.closing_quantity,d.issued_quantity,d.open_quantity,d.received_quantity,d.remark FROM daily_stock d LEFT OUTER JOIN item i on d.item_id=i.id WHERE i.name='"+itemcodetxt+"' and create_date  LIKE '"+year+"-"+month+"%'";
+        }
+
+        {
+            try {
+
+            }catch (Exception e){
+                e.printStackTrace();
             }
+            Query query = getSession().createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            results = query.list();
+            return results;
+        }
     }
 
     @Transactional
     public List<DailyStockRecord> getDailyStockByFromTo(String fromdate, String todate) {
-        {
-         try {
 
-                         
+        return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date BETWEEN '"+fromdate+"%' AND '"+todate+"%'").list();
 
-                 }catch (Exception e){
-                     e.printStackTrace();
-
-                 }finally{
-                   //  s.close();
-                 }
-
-                                                                                                                                //"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'
-                  //return (Long)getSession().createQuery("From DailyStockRecord WHERE  item.id=itemcode AND date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").uniqueResult();
-                  return (List<DailyStockRecord>)getSession().createQuery("from DailyStockRecord WHERE date BETWEEN '"+fromdate+"%' AND '"+todate+"%'").list();
-                //  return getSession().createQuery("From DailyStockRecord WHERE date LIKE '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"%'").list();
-            }
     }
-   
+
+    @Transactional
+    public List<StoreIssue> searchBySiId(Long  n){
+
+        return (List<StoreIssue>)getSession().createQuery("FROM StoreIssue WHERE id='"+n+"'").list();
+    }
+
+
+    public List<StoreIssue> searchBySiRequisitionId(Long n) {
+        return (List<StoreIssue>)getSession().createQuery("FROM StoreIssue s WHERE s.requisition.id='"+n+"'").list();
+    }
+
+    @Transactional
+    public List getDailyStockByItemCode(String itemcodetxt)
+    {
+        List results;
+        String sql="SELECT d.id,d.create_date,i.name,i.item_code,d.closing_quantity,d.issued_quantity,d.open_quantity,d.received_quantity,d.remark FROM daily_stock d LEFT OUTER JOIN item i on d.item_id=i.id WHERE i.item_code='"+itemcodetxt+"'";
+        Query query = getSession().createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        results = query.list();
+        return results;//getSession().createSQLQuery(sql).list();
+    }
+
+
+    @Transactional
+    public List<StoreIssue> searchBySiDate(String sdate){
+        sdate=sdate.replace("/","-");
+        try{
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = (Date)formatter.parse(sdate);
+            sdate = formatter.format(date);
+
+        }
+        catch (ParseException e)
+        {
+            System.out.println("Exception :"+e);
+        }
+        return getSession().createQuery("FROM StoreIssue WHERE issueDate LIKE '"+sdate+"%'").list();
+    }
+
+    public int daysBetween(Date d1, Date d2){
+
+        return (int) ((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
+    }
+
+
 }

@@ -7,8 +7,8 @@
 --%>
 <%@ include file="/includes/_taglibInclude.jsp" %>
 <link rel="stylesheet" href="/css/general.css" type="text/css" media="screen" />
- <script src="http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="../css/stylesheet.css"/>
+
+<link rel="stylesheet" type="text/css" href="/css/stylesheet.css"/>
  <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script type="text/javascript">
     $(document).ready(function(){

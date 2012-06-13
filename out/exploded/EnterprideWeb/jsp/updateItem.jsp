@@ -7,10 +7,12 @@
 --%>
 <%@ include file="/includes/_taglibInclude.jsp" %>
 <link rel="stylesheet" href="/css/general.css" type="text/css" media="screen" />
-    <script src="http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js" type="text/javascript"></script>
+    <script src="/js/jquery-1.2.6.min.js" type="text/javascript"></script>
     <script src="/js/popup.js" type="text/javascript"></script>
  <script type="text/javascript" src="js/jquery.js"></script>
  <script type="text/javascript">
+ var sectname;
+ var uomname;
 function ajaxLink(link, update) {
   if (confirm("Are you sure, you want to delete selected record."))
     {
@@ -21,7 +23,27 @@ function ajaxLink(link, update) {
     }
  return false;
  }
+ function checkitem() {
 
+$.post('Item.action?checkItemAlreadyPresent', {addItemName:$("#updateitemname").val().trim()}, function (data) {
+                                         var flag=eval(data);
+                                        var updatename=$('#updateitemname').val().trim().toString();
+                                        var dropdownname=$("#itemdropdown option:selected").text().trim().toString();
+
+                                        if(updatename == dropdownname)
+                                        {
+                                          return true;
+                                        }
+                                         else if(flag)
+                                         {
+                                            alert("Item Already Exist !");
+                                             $("#updateitemname").val("");
+                                             $("#updateitemname").focus();
+                                              return false;
+                                         }
+                          });
+
+}
 function submitForm(button,update) {
 
 var form = button.form;
@@ -37,15 +59,46 @@ var params = $(form).serializeArray();
                    return false;
     }
       else{
-params.push({name: '_eventName' , value: button.name});
-$.post(form.action, params, function (data) {
-$( update ).html(data);
-     $(update).show();
-     $('#sectiontxt').val("");
-      $('#savesectionbtn').show();
-          $('#updatesectionbtn').hide();
+        $.post('Item.action?checkSectionAlreadyPresent', {addSectionName:$("#sectiontxt").val().trim()}, function (data) {
+            var flag=eval(data);
+           var updatename=$('#sectiontxt').val().trim().toString();
 
-});     }
+
+                                        if(updatename == sectname)
+                                        {
+                                            params.push({name: '_eventName' , value: button.name});
+                                                $.post(form.action, params, function (data) {
+                                                $( update ).html(data);
+                                                $(update).show();
+                                                $('#sectiontxt').val("");
+                                                $('#savesectionbtn').show();
+                                                $('#updatesectionbtn').hide();
+                                                });
+                                          return true;
+                                        }
+                                         else
+           if(flag)
+           {
+              alert("Section Already Exist !");
+               $("#sectiontxt").val("");
+               $("#sectiontxt").focus();
+           }
+         else
+           {
+                params.push({name: '_eventName' , value: button.name});
+                $.post(form.action, params, function (data) {
+                $( update ).html(data);
+                $(update).show();
+                $('#sectiontxt').val("");
+                $('#savesectionbtn').show();
+                $('#updatesectionbtn').hide();
+            });
+           }
+
+                   });
+
+
+    }
 return false;
 }
 
@@ -57,16 +110,43 @@ var params = $(form).serializeArray();
                    $("#uomtxt").focus() ;
                    return false;
  }else{
+     $.post('Item.action?checkUomAlreadyPresent', {addUomName:$("#uomtxt").val().trim()}, function (data) {
+            var flag=eval(data);
+         var updatename=$('#uomtxt').val().trim().toString();
+         
+           if(updatename == uomname)
+                                        {
+                                             params.push({name: '_eventName' , value: button.name});
+                                                $.post(form.action, params, function (data) {
+                                                $( update ).html(data);
+                                                $(update).show();
+                                                $('#uomtxt').val("");
+                                                $('#saveuombtn').show();
+                                                $('#updateuombtn').hide();
+                                                });
+                                          return true;
+                                        }
+                                         else   if(flag)
+           {
+              alert("Uom Already Exist !");
+               $("#uomtxt").val("");
+               $("#uomtxt").focus();
+           }
+         else
+           {
+               params.push({name: '_eventName' , value: button.name});
+                $.post(form.action, params, function (data) {
+                $( update ).html(data);
+                $(update).show();
+                $('#uomtxt').val("");
+                $('#saveuombtn').show();
+                $('#updateuombtn').hide();
+                });
+           }
 
-params.push({name: '_eventName' , value: button.name});
-$.post(form.action, params, function (data) {
-$( update ).html(data);
-     $(update).show();
-     $('#uomtxt').val("");
-      $('#saveuombtn').show();
-          $('#updateuombtn').hide();
+                   });
 
-});    }
+  }//end of else
 return false;
 }
 
@@ -78,6 +158,7 @@ function updateLink(link) {
 
       $('#sectiontxt').attr("value",result.name);
        $('#sectionhdnid').attr("value",result.id);
+     sectname=$('#sectiontxt').val().trim().toString();
      $('#savesectionbtn').hide();
           $('#updatesectionbtn').show();
 
@@ -92,6 +173,7 @@ function updateLinkuom(link) {
 
       $('#uomtxt').attr("value",result.name);
        $('#uomhdnid').attr("value",result.id);
+       uomname=$('#uomtxt').val().trim().toString();
      $('#saveuombtn').hide();
           $('#updateuombtn').show();
 
@@ -270,7 +352,7 @@ Item Management > Update Item
 
                    <tr ><td width="24%" align="left" valign="top">
                      <div align="right" style="margin-left: 2px;" class="labels"><s:label name="Item Name"></s:label><span style="color:#FF0000"> *</span></div></td>
-                  <td width="25%" align="left" valign="top" ><s:text id="updateitemname" name="item.name" class="textbox"></s:text>
+                  <td width="25%" align="left" valign="top" ><s:text id="updateitemname" name="item.name" class="textbox" onchange="return checkitem()"></s:text>
                    <s:hidden name="item.deleted"   value="1"/>
                   </td>
                   <td width="22%" align="left" valign="top" ><s:hidden id="updateitemname" name="item.id" class="textbox"></s:hidden> </td>
@@ -287,11 +369,11 @@ Item Management > Update Item
                   </tr>
 
                <tr><td align="left" valign="top">
-                 <div align="right" style="margin-left: 2px;" class="labels">Item UOM<span style="color:#FF0000"> *</span></div></td>
+                 <div align="right" style="margin-left: 2px;" class="labels">Item UoM<span style="color:#FF0000"> *</span></div></td>
                         <td align="left" valign="top" >
 
                        <s:select name="item.uom.id" id="uomdropdown" class="dropdown">
-                                      <option value="">---Select UOM---</option>
+                                      <option value="">---Select UoM---</option>
                                  <c:forEach items="${uomlst}" var="uomloop" varStatus="loop" >
                 <c:choose>
                   <c:when test="${actionBean.item.uom.name eq uomloop.name}">
@@ -310,7 +392,7 @@ Item Management > Update Item
                               </s:select>
 
                           </td>
-                        <td align="left" valign="top" ><s:button name="add" class="links" id="uombutton" value="Add/Update Uom"></s:button></td>
+                        <td align="left" valign="top" ><s:button name="add" class="links" id="uombutton" value="Add/Update UoM"></s:button></td>
                         <td width="26%" align="left" valign="top" ></td>
                                       </tr>
 
@@ -408,12 +490,12 @@ Item Management > Update Item
                               <div id="popupContact1">
                       <a id="popupContactClose1">x</a>
 
-                      <h1>Add Uom</h1>
+                      <h1>Add UoM</h1>
                       <p id="contactArea1">
 
                          <s:form beanclass="com.erp.action.UomActionBean" id="saveuom" >
                          <table width="100%" border="0"><tr><td>
-                            <s:label name="Uom Name"></s:label><span style="color:#FF0000"> *</span></td>
+                            <s:label name="UoM Name"></s:label><span style="color:#FF0000"> *</span></td>
                   <td width="27%" align="left" valign="top" ><s:text name="uom.name"  id="uomtxt" class="textbox"></s:text>
                    <s:hidden name="uom.deleted" value="1"/>
                   </td>

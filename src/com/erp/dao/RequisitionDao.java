@@ -13,12 +13,15 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface RequisitionDao {
-    
     public Requisition findById(Long id);
-  
+
     public List getRequisition();
-       public boolean SaveRequisition(Requisition requisition, List<RequisitionDetail> requisitiondetail);
-     public void update(Requisition requisition,List<RequisitionDetail> requisitiondetail);
+
+    public boolean SaveRequisition(Requisition requisition, List<RequisitionDetail> requisitiondetail);
+
+    public void update(Requisition requisition,List<RequisitionDetail> requisitiondetail);
+
     public  Requisition latestrequisition();
 
+    public Requisition getRequisitionWithAvailableQuantity(Requisition req);
 }

@@ -126,24 +126,8 @@ public class VendorActionBean extends BaseActionBean{
         vendorlst=vendordao.getVendor();
         return new RedirectResolution(getContext().getSourcePage());
     }
-    public Resolution historyVendorLink()
-    {
-        return new ForwardResolution("jsp/historyVendor_2.jsp");
-    }
-    public Resolution history()
-    {
 
-        vendorlst= vendordao.findByName(getVendor().getName());
-        Iterator it=vendorlst.iterator();
-          
-       return new ForwardResolution(getContext().getSourcePage());
-    }
-    public Resolution autovendor()
-    {
-        // StringBuilder result = new StringBuilder();
-             vendorhlst=vendordao.allVendor();
 
-         return new JavaScriptResolution(vendorhlst);
-    }
+  
 
 }

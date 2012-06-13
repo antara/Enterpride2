@@ -17,87 +17,54 @@ import java.util.List;
  */
 public class RoleDaoImpl extends BaseDao implements RoleDao {
 
+
+    public List getRole(){
+        return getSession().createQuery("from Role where deleted='1' and id <> 1").list();
+    }
     @Transactional
-         public List getRole(){
+    public boolean SaveRole(Role role)
 
-            String hql="from Role where deleted='1' and id <> 1";
-            try {
-
-                      
-
-            }catch (Exception e){
-                e.printStackTrace();
-
-            }finally{
-              //  s.close();
-            }
-             return getSession().createQuery(hql).list();
-        }
-    @Transactional
-         public boolean SaveRole(Role role)
-
-       {
+    {
         try {
 
-                       
-               if(role!=null){
-                  getSession().save(role);
-                   
-                   return true;
-               }else{
-                   return false;
-               }
-           }catch (Exception e){
-               e.printStackTrace();
-               return false;
-           }finally{
-             //  getSession().close();
-           }
 
-       }
+            if(role!=null){
+                getSession().save(role);
 
-      
-                  @Transactional
-       public Role findById(Long id){
-            Role ud=null;
-              try {
-                                    
+                return true;
+            }else{
+                return false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
 
-           return (Role)getSession().createQuery("from Role where id='"+id+"'").uniqueResult();
-              }catch (Exception e){
+    }
 
-              }
-           return null;
-       }
-                                @Transactional
+
+
+    public Role findById(Long id){
+        Role ud=null;
+
+        return (Role)getSession().createQuery("from Role where id='"+id+"'").uniqueResult();
+    }
+    @Transactional
     public void delete(Role role) {
-       try{
-        
+        try{
             role.setDeleted(0);
-               getSession().update(role);
-                
-
-
+            getSession().update(role);
         }catch (Exception e){
             e.printStackTrace();
 
-        }finally{
-          //  getSession().close();
         }
     }
-                                              @Transactional
+    @Transactional
     public void update(Role role) {
         try{
-        
-               getSession().update(role);
-                
-
-
+            getSession().update(role);
         }catch (Exception e){
             e.printStackTrace();
-
-        }finally{
-          //  getSession().close();
         }
     }
 

@@ -1,6 +1,6 @@
 <%@ include file="/includes/_taglibInclude.jsp" %>
 <link rel="stylesheet" href="/css/general.css" type="text/css" media="screen" />
-    <script src="http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js" type="text/javascript"></script>
+
     <script src="/js/popup.js" type="text/javascript"></script>
 <%--
   Created by IntelliJ IDEA.
@@ -11,6 +11,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
    <script type="text/javascript">
+   var sectname;
+   var uomname;
 function ajaxLink(link, update) {
 
     if (confirm("Are you sure, you want to delete selected record."))
@@ -27,11 +29,11 @@ function ajaxLink(link, update) {
 
 function checkitem() {
  
-$.post('Item.action?checkItemAlreadyPresent', {addItemName:$("#additemname").val().trim()}, function (data) {
+$.post("/Item.action?checkItemAlreadyPresent", {addItemName:$("#additemname").val().trim()}, function (data) {
                                          var flag=eval(data);
                                          if(flag)
                                          {
-                                            alert("Item Already Exist !");
+                                            alert("item already exist !");
                                              $("#additemname").val("");
                                              $("#additemname").focus();
                                               return false;
@@ -56,26 +58,40 @@ var params = $(form).serializeArray();
                    return false;
     }
     else{
-        $.post('Item.action?checkSectionAlreadyPresent', {addSectionName:$("#sectiontxt").val().trim()}, function (data) {
+        $.post("/Item.action?checkSectionAlreadyPresent", {addSectionName:$("#sectiontxt").val().trim()}, function (data) {
             var flag=eval(data);
+             var updatename=$('#sectiontxt').val().trim().toString();
 
-           if(flag)
-           {
-              alert("Section Already Exist !");
-               $("#sectiontxt").val("");
-               $("#sectiontxt").focus();
-           }
-         else
-           {
-                params.push({name: '_eventName' , value: button.name});
-                $.post(form.action, params, function (data) {
-                $( update ).html(data);
-                $(update).show();
-                $('#sectiontxt').val("");
-                $('#savesectionbtn').show();
-                $('#updatesectionbtn').hide();
-            });  
-           }
+
+                                        if(updatename == sectname)
+                                        {
+                                            params.push({name: '_eventName' , value: button.name});
+                                                $.post(form.action, params, function (data) {
+                                                $( update ).html(data);
+                                                $(update).show();
+                                                $('#sectiontxt').val("");
+                                                $('#savesectionbtn').show();
+                                                $('#updatesectionbtn').hide();
+                                                });
+                                          return true;
+                                        }
+                                         else if(flag)
+                                           {
+                                              alert("Section Already Exist !");
+                                               $("#sectiontxt").val("");
+                                               $("#sectiontxt").focus();
+                                           }
+                                         else
+                                           {
+                                                params.push({name: '_eventName' , value: button.name});
+                                                $.post(form.action, params, function (data) {
+                                                $( update ).html(data);
+                                                $(update).show();
+                                                $('#sectiontxt').val("");
+                                                $('#savesectionbtn').show();
+                                                $('#updatesectionbtn').hide();
+                                            });
+                                           }
 
                    });
 
@@ -91,26 +107,40 @@ var params = $(form).serializeArray();
                    $("#uomtxt").focus() ;
                    return false;
  }else{
-     $.post('Item.action?checkUomAlreadyPresent', {addUomName:$("#uomtxt").val().trim()}, function (data) {
+     $.post("/Item.action?checkUomAlreadyPresent", {addUomName:$("#uomtxt").val().trim()}, function (data) {
             var flag=eval(data);
+           var updatename=$('#uomtxt').val().trim().toString();
 
-           if(flag)
-           {
-              alert("Uom Already Exist !");
-               $("#uomtxt").val("");
-               $("#uomtxt").focus();
-           }
-         else
-           {
-               params.push({name: '_eventName' , value: button.name});
-                $.post(form.action, params, function (data) {
-                $( update ).html(data);
-                $(update).show();
-                $('#uomtxt').val("");
-                $('#saveuombtn').show();
-                $('#updateuombtn').hide();
-                });  
-           }
+
+                                        if(updatename == uomname)
+                                        {
+                                             params.push({name: '_eventName' , value: button.name});
+                                                $.post(form.action, params, function (data) {
+                                                $( update ).html(data);
+                                                $(update).show();
+                                                $('#uomtxt').val("");
+                                                $('#saveuombtn').show();
+                                                $('#updateuombtn').hide();
+                                                });
+                                          return true;
+                                        }
+                                         else if(flag)
+                                       {
+                                          alert("Uom Already Exist !");
+                                           $("#uomtxt").val("");
+                                           $("#uomtxt").focus();
+                                       }
+                                     else
+                                       {
+                                           params.push({name: '_eventName' , value: button.name});
+                                            $.post(form.action, params, function (data) {
+                                            $( update ).html(data);
+                                            $(update).show();
+                                            $('#uomtxt').val("");
+                                            $('#saveuombtn').show();
+                                            $('#updateuombtn').hide();
+                                            });
+                                       }
 
                    });
 
@@ -126,6 +156,7 @@ function updateLink(link) {
 
       $('#sectiontxt').attr("value",result.name);
        $('#sectionhdnid').attr("value",result.id);
+      sectname=$('#sectiontxt').val().trim().toString();
      $('#savesectionbtn').hide();
           $('#updatesectionbtn').show();
 
@@ -140,6 +171,7 @@ function updateLinkuom(link) {
 
       $('#uomtxt').attr("value",result.name);
        $('#uomhdnid').attr("value",result.id);
+     uomname=$('#uomtxt').val().trim().toString();
      $('#saveuombtn').hide();
           $('#updateuombtn').show();
 
@@ -173,7 +205,7 @@ function updateLinkuom(link) {
                                }
                           }*/
                          if ($("#uomdropdown").val().trim() ==""){
-                              alert("please select the UOM name");
+                              alert("please select the UoM name");
                              
                               return false;
                           }
@@ -214,7 +246,7 @@ disablePopup1();
 
 $.get("/Uom.action?paginationUom", function (result) {
     var data=eval(result);
-    var options = '<option value="">---Select UOM---</option>';
+    var options = '<option value="">---Select UoM---</option>';
                         for (var i = 0; i < data.length; i++) {
                             options += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
                         }

@@ -32,7 +32,7 @@
 $("#getdailyledgerbtn").click(function(){
              
             if ($("#itemcode").val().trim() ==""){
-                              alert("please enter the item code through drop down list.");
+                              alert("please enter the item name through drop down list.");
                               $("#itemcode").focus() ;
                               $("#itemcode").val("") ;
                               return false;
@@ -109,8 +109,10 @@ $("#getfromtobtn").click(function(){
               $('.foryear').hide();
               $('#itemselectdatetable').hide();
               $('#textboxh').hide();
-
-
+         
+                 $('#month').attr("value","0");
+            $('#year').attr("value","0");
+             $('#getbymonthbtn').show();
               $('.foritemselectdate').hide();
               $('#texboxh').hide();
               $('.formonth').show();
@@ -136,10 +138,10 @@ $("#getfromtobtn").click(function(){
               $('#itemselectdatetable').hide();
               $('.foritemselectdate').hide();
               $('.texboxh').hide();
-              $('.formonth').hide();
+              $('.formonth').show();
               $('.foryear').hide();
               $('.fordailyledger').show();
-
+               $('#getbymonthbtn').hide();
 
          });
 $('#radio6').click(function() {
@@ -240,7 +242,8 @@ $('#radio6').click(function() {
                    <td width="8%" height="21" align="left" valign="top"></td>
                    <td width="1%" colspan=""  align="right" valign="top"></td>
                    <td  align="right" colspan="2" valign="top"><strong>Select Date</strong> </td>
-                   <td  align="left" colspan="7" valign="top"><s:text name="sdate" id="textboxh" readonly="readonly" onFocus="showCalendarControl(this);" class="textbox"></s:text> &nbsp;&nbsp;<s:submit name="bySelectDate" id="getselectbydatebtn" value="Get"></s:submit></td>
+                   <td  align="left" colspan="7" valign="top"><s:text name="sdate" id="textboxh" readonly="readonly" onFocus="showCalendarControl(this);" class="textbox"></s:text> &nbsp;&nbsp;
+                       <s:submit name="bySelectDate" id="getselectbydatebtn" value="Get"></s:submit></td>
                <td  align="left" colspan="3" valign="top"></td>
                  </tr>
          <tr class="formonth" style="display:none;" >
@@ -261,10 +264,11 @@ $('#radio6').click(function() {
             </c:forEach>
          </s:select>&nbsp;&nbsp;
 
-         <s:submit name="byMonth" id="getbymonthbtn" value="Get"></s:submit>
+         <s:submit name="byMonth" id="getbymonthbtn" value="Get" style="display:none;"></s:submit>
              </td>
      
        </tr>
+
           <tr class="foryear" style="display:none;" >
          <td width="8%" height="21" align="left" valign="top"></td>
          <td width="1%" colspan=""  align="right" valign="top"></td>
@@ -289,7 +293,7 @@ $('#radio6').click(function() {
 <tr class="fordailyledger" style="display:none;" >
          <td width="8%" height="21" align="left" valign="top"></td>
          <td width="1%"  align="right" valign="top"></td>
-         <td  align="right" colspan="3" valign="top">Enter Item Code </td>
+         <td  align="right" colspan="3" valign="top">Enter Item Name </td>
          <td  align="left" colspan="9" valign="top">
          <s:text name="itemcodetxt" class="textbox" id="itemcode"/>
          &nbsp;&nbsp;<s:submit name="byDailyLedger" id="getdailyledgerbtn" value="Get"></s:submit>
@@ -331,6 +335,7 @@ $('#radio6').click(function() {
 <script type="text/javascript">
         $(document).ready(function() {
     $('.foritem').show();
+            $('#getbymonthbtn').show();
             $('.formonth').show();
             $('.foritemselectdate').hide();
             $('.foritemdate').hide();
@@ -361,10 +366,21 @@ $('#radio6').click(function() {
 <c:if test="${actionBean.search eq 'byDailyLedger'}">
 <script type="text/javascript">
         $(document).ready(function() {
+                $('.formonth').show();
             $('.foritem').show();
             $('.fordailyledger').show();
              $('.foritemselectdate').hide();
             $('.foritemdate').hide();
+            var fromact=${actionBean.month};
+                        if(fromact<9)
+                        {
+                        var m="0"+${actionBean.month};
+                        $('#month').attr("value",m);
+                        }
+                         else
+                           $('#month').attr("value",fromact);
+
+            $('#year').attr("value",${actionBean.year});
             $('#itemcode').attr("value",${actionBean.itemcodetxt});
        });
   </script>
@@ -411,6 +427,24 @@ $('#radio6').click(function() {
       %>
             <table id="itemdailytable"  width="100%"><tr><td>
                   <d:table name="dailystocktodaylst" id="v" pagesize="10" class="disp" requestURI="/Report.action">
+                  <d:column property="create_date" format="{0,date,yyyy-MM-dd}" sortable="false" title="Create Date"/>
+                  <d:column property="name" title="Item Name"/>
+                  <d:column property="item_code" title="Item Code"/>
+                  <d:column property="open_quantity" title="open Quantity"/>
+                  <d:column property="received_quantity" title="received Quantity"/>
+                  <d:column property="issued_quantity" title="issued Quantity" />
+                  <d:column property="closing_quantity" title="closing Quantity"/>
+                  <d:column property="remark" title="remark"/>
+                  </d:table></td></tr>
+            </table>
+                   </c:if>
+          <c:if test="${actionBean.dailyLedger!=null}">
+<s:useActionBean beanclass="com.erp.action.ReportActionBean" event="byDailyLedger" var="lst"></s:useActionBean>
+      <%
+          request.setAttribute("dailyLedger",lst.getDailyLedger());
+      %>
+            <table id="itemdailytable"  width="100%"><tr><td>
+                  <d:table name="dailyLedger" id="v" pagesize="10" class="disp" requestURI="/Report.action">
                   <d:column property="create_date" format="{0,date,yyyy-MM-dd}" sortable="false" title="Create Date"/>
                   <d:column property="name" title="Item Name"/>
                   <d:column property="item_code" title="Item Code"/>

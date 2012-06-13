@@ -24,6 +24,17 @@ public class RequisitionDetail {
      @JoinColumn(name="item_id")
      private Item item;
 
+    @Transient
+    private Double availableQuantity;
+
+    public Double getAvailableQuantity() {
+        return availableQuantity;
+    }
+
+    public void setAvailableQuantity(Double availableQuantity) {
+        this.availableQuantity = availableQuantity;
+    }
+
     public Long getId() {
         return id;
     }
@@ -54,6 +65,7 @@ public class RequisitionDetail {
                 "id=" + id +
                 ", requiredQty=" + requiredQty +
                 ", item=" + item +
+                ", availableQuantity=" + availableQuantity +
                 '}';
     }
 }

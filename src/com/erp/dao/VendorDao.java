@@ -13,12 +13,27 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface VendorDao {
-     public boolean SaveVendor(Vendor vendor);
-      public List getVendor();
-     public void delete(Vendor vendor);
-       public void update(Vendor vendor);
+    public boolean SaveVendor(Vendor vendor);
+
+    public List getVendor();
+
+    public void delete(Vendor vendor);
+
+    public void update(Vendor vendor);
+
     public Vendor findById(Long id);
-     public List<String> allVendor();
+
+    public List<String> allVendor();
+
     public List<Vendor> findByName(String fname);
-     public List<Vendor> searchByName(String name);
+
+    public List<Vendor> searchByName(String name);
+
+    public List<String> vendorIdLst();
+
+    public List<String> vendorProductlst();
+
+    public List<Vendor> searchByVendorId(String vendorid);
+
+    public List<Vendor> searchByVendorProduct(String vendorproduct);
 }

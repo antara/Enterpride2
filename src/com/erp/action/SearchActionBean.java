@@ -24,6 +24,8 @@ public class SearchActionBean extends BaseActionBean{
    private  List<Item> itemlst;
     private List<Vendor> vendorlst;
     private String name;
+    private Double tot;
+    private String ajaxSubmenu;
     private Long no;
     private String search;
     public  List<String> vendorhlst;
@@ -37,12 +39,72 @@ public class SearchActionBean extends BaseActionBean{
     public  List<String> grnnolst;
     private List<StoreIssue> storeissuelst ;
     public  List<String> storeissuenolst  ;
-      private List<PurchaseOrder> purchaseOrderlst ;
-    public  List<String> PurchaseOrderNolst  ;
-    public  List<Long> tempSI;
-       private PurchaseOrder purchaseOrder;
+   private List<PurchaseOrder> purchaseOrderlst ;
+   public  List<String> PurchaseOrderNolst  ;
+   public  List<Long> tempSI;
+   private PurchaseOrder purchaseOrder;
    private  String hdnvalue;
-     public StoreIssue storeissue;
+   public StoreIssue storeissue;
+   private String date;
+   private String fromdate,todate;
+   private Grn grn;
+   private Terms term;
+
+    public Terms getTerm() {
+        return term;
+    }
+
+    public void setTerm(Terms term) {
+        this.term = term;
+    }
+
+    public Double getTot() {
+        return tot;
+    }
+
+    public void setTot(Double tot) {
+        this.tot = tot;
+    }
+
+    public Grn getGrn() {
+        return grn;
+    }
+
+    public void setGrn(Grn grn) {
+        this.grn = grn;
+    }
+
+    public String getFromdate() {
+        return fromdate;
+    }
+
+    public void setFromdate(String fromdate) {
+        this.fromdate = fromdate;
+    }
+
+    public String getTodate() {
+        return todate;
+    }
+
+    public void setTodate(String todate) {
+        this.todate = todate;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getAjaxSubmenu() {
+        return ajaxSubmenu;
+    }
+
+    public void setAjaxSubmenu(String ajaxSubmenu) {
+        this.ajaxSubmenu = ajaxSubmenu;
+    }
 
     public String getTemp1() {
         return temp1;
@@ -229,43 +291,60 @@ public class SearchActionBean extends BaseActionBean{
      @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
     public Resolution search()
     {
-        if(search.equalsIgnoreCase("byItemName"))
+        //Purchase Order Submenu function for different inputs
+        if(searchSubmenu.equalsIgnoreCase("poNumber"))
+            purchaseOrderlst=purchaseorderdao.searchByName(getName());
+        if(searchSubmenu.equalsIgnoreCase("poVendorName"))
+            purchaseOrderlst=purchaseorderdao.searchByPoVendorName(getName());
+        if(searchSubmenu.equalsIgnoreCase("poVendorId"))
+           purchaseOrderlst=purchaseorderdao.searchByPoVendorId(getName());
+        if(searchSubmenu.equalsIgnoreCase("poDate"))
+           purchaseOrderlst=purchaseorderdao.searchByPoDate(date);
+        if(searchSubmenu.equalsIgnoreCase("poBetweenDate"))
+           purchaseOrderlst=purchaseorderdao.searchByFromTo(fromdate,todate);
+         // GRN
+        if(searchSubmenu.equalsIgnoreCase("grnNumber"))
+             grnlst=grndao.searchByGrnNumber(Long.parseLong(getName()));
+         if(searchSubmenu.equalsIgnoreCase("grnPoNumber"))
+             grnlst=grndao.searchByGrnPONumber(getName());
+         if(searchSubmenu.equalsIgnoreCase("grnVendorName"))
+               grnlst=grndao.searchByGrnVendorName(getName());
+         if(searchSubmenu.equalsIgnoreCase("grnVendorId"))
+               grnlst=grndao.searchByGrnVendorId(getName());
+         if(searchSubmenu.equalsIgnoreCase("grnDate"))
+               grnlst=grndao.searchByGrnDate(date);
+       if(searchSubmenu.equalsIgnoreCase("grnOrderDate"))
+               grnlst=grndao.searchByGrnOrderDate(date);
+       if(searchSubmenu.equalsIgnoreCase("grnBetweenDate"))
+              grnlst=grndao.searchByGrnFromTo(fromdate,todate);
+        //Item
+        if(searchSubmenu.equalsIgnoreCase("itemiName"))
             itemlst=itemdao.searchByName(getName());
-        if(name.equalsIgnoreCase("milind"))
-        {
-            System.out.println("searchSubmenu :"+getSearchSubmenu());
-            System.out.println("searchmenu :"+getSearchMenu());
-            System.out.println("temp1 :"+getTemp1());
-            System.out.println("temp :"+getTemp());
-               System.out.println("name"+getName());
-            vendorlst=vendordao.searchByName(getName());
-            searchSubmenu="vendorName";
-            searchMenu="byVendor";
-            temp1=searchSubmenu;
+        if(searchSubmenu.equalsIgnoreCase("itemiCode"))
+            itemlst=itemdao.searchByItemCode(getName());
+        if(searchSubmenu.equalsIgnoreCase("itemUom"))
+            itemlst=itemdao.searchByItemUom(getName());
+        if(searchSubmenu.equalsIgnoreCase("itemSection"))
+            itemlst=itemdao.searchByItemSection(getName());
+        //Vendor
+        if(searchSubmenu.equalsIgnoreCase("vendorName"))
+           vendorlst=vendordao.searchByName(getName());
+        if(searchSubmenu.equalsIgnoreCase("vendorId"))
+           vendorlst=vendordao.searchByVendorId(getName());
+        if(searchSubmenu.equalsIgnoreCase("vendorProduct"))
+           vendorlst=vendordao.searchByVendorProduct(getName());
+        //Store Issue
+        if(searchSubmenu.equalsIgnoreCase("siNumber"))
+            storeissuelst=storeissuedao.searchBySiId(Long.parseLong(getName()));
+        if(searchSubmenu.equalsIgnoreCase("siRequisitionId"))
+            storeissuelst=storeissuedao.searchBySiRequisitionId(Long.parseLong(getName()));
+        if(searchSubmenu.equalsIgnoreCase("siDate"))
+            storeissuelst=storeissuedao.searchBySiDate(date);
 
-            
-        }
-        if(search.equalsIgnoreCase("byGrn"))
-        {
-            no=Long.parseLong(getName());
-            grnlst=grndao.searchByName(no);
 
-        }
-         if(search.equalsIgnoreCase("byStoreIssueNo"))
-        {
-            no=Long.parseLong(getName());
-            storeissuelst=storeissuedao.searchByName(no);
-        }
-         if(search.equalsIgnoreCase("byPurchaseOrder"))
-        {
-           purchaseOrderlst=purchaseorderdao.searchByName(getName());
-
-        }
-
-        System.out.println("searchterm "+name);
-        return new ForwardResolution("jsp/search.jsp").addParameter("name",name);
+       return new ForwardResolution("jsp/search.jsp").addParameter("name",name).addParameter("searchSubmenu",searchSubmenu);
     }
-    @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
+  /*  @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
     public Resolution lst()
     {
         //    vendorhlst=vendordao.allVendor();
@@ -280,12 +359,15 @@ public class SearchActionBean extends BaseActionBean{
             // PurchaseOrderNolst=purchaseorderdao.getAllPurchaseOrderNo();
         return new ForwardResolution("jsp/search.jsp");
     }
-
+*/
     public Resolution autovendor()
     {
-
-             vendorhlst=vendordao.allVendor();
-
+            if(ajaxSubmenu.equalsIgnoreCase("vendorName"))
+                vendorhlst=vendordao.allVendor();
+            else if(ajaxSubmenu.equalsIgnoreCase("vendorId"))
+                vendorhlst=vendordao.vendorIdLst();
+         else if(ajaxSubmenu.equalsIgnoreCase("vendorProduct"))
+                vendorhlst=vendordao.vendorProductlst();
          return new JavaScriptResolution(vendorhlst);
     }
      @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
@@ -294,7 +376,6 @@ public class SearchActionBean extends BaseActionBean{
         // StringBuilder result = new StringBuilder();
         if(search.equalsIgnoreCase("byVendorName"))
         {
-
                 vendorhlst=vendordao.allVendor();
                 return new JavaScriptResolution(vendorhlst);
         }
@@ -310,31 +391,44 @@ public class SearchActionBean extends BaseActionBean{
      @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
      public Resolution autoitem()
     {
-
-             itemnamelst=itemdao.allItem();
+            if(ajaxSubmenu.equalsIgnoreCase("itemiName"))
+                         itemnamelst=itemdao.allItem();
+            if(ajaxSubmenu.equalsIgnoreCase("itemiCode"))
+                         itemnamelst=itemdao.getItemCodelst();
+            if(ajaxSubmenu.equalsIgnoreCase("itemUom"))
+                         itemnamelst=itemdao.getItemUomlst();
+            if(ajaxSubmenu.equalsIgnoreCase("itemSection"))
+                         itemnamelst=itemdao.getItemSectionlst();
 
         return new JavaScriptResolution(itemnamelst);
     }
 
     public Resolution autogrn()
     {
-            // StringBuilder result = new StringBuilder();
+          if(ajaxSubmenu.equalsIgnoreCase("grnPoNumber"))
+                             grnnolst=grndao.getGrnPoNumberLst();
+          if(ajaxSubmenu.equalsIgnoreCase("grnVendorName"))
+                             grnnolst=grndao.getGrnVendorNameLst();
+          if(ajaxSubmenu.equalsIgnoreCase("grnVendorId"))
+                             grnnolst=grndao.getGrnVendorIdLst();
+          if(ajaxSubmenu.equalsIgnoreCase("grnNumber"))
+          {
                  temp=grndao.allGrnno();
               grnnolst=new ArrayList<String>();
         for(Iterator<Long> i=temp.iterator();i.hasNext();){
             grnnolst.add(i.next().toString());
         }
+          }
 
             return new JavaScriptResolution(grnnolst);
         }
      @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
-    public Resolution   autoStoreIssue ()
+    public Resolution autoStoreIssue ()
            {
-
-                    tempSI=storeissuedao.allStoreIssue();
-               storeissuenolst=new ArrayList<String>();
-        for(Iterator<Long> i=tempSI.iterator();i.hasNext();){
-            storeissuenolst.add(i.next().toString());
+                tempSI=storeissuedao.allStoreIssue();
+                storeissuenolst=new ArrayList<String>();
+                for(Iterator<Long> i=tempSI.iterator();i.hasNext();){
+                storeissuenolst.add(i.next().toString());
         }
 
                return new JavaScriptResolution(storeissuenolst);
@@ -342,7 +436,11 @@ public class SearchActionBean extends BaseActionBean{
       @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
          public Resolution autoPurchaseOrder()
          {
-
+                    if(ajaxSubmenu.equalsIgnoreCase("poVendorName"))
+                               PurchaseOrderNolst=purchaseorderdao.getPoVendorNameLst();
+                  if(ajaxSubmenu.equalsIgnoreCase("poVendorId"))
+                               PurchaseOrderNolst=purchaseorderdao.getPoVendorIdLst();
+                   if(ajaxSubmenu.equalsIgnoreCase("poNumber"))
                     PurchaseOrderNolst=purchaseorderdao.getAllPurchaseOrderNo();
 
                return new JavaScriptResolution(PurchaseOrderNolst);
@@ -351,7 +449,7 @@ public class SearchActionBean extends BaseActionBean{
      public Resolution print()
     {
 
-        System.out.println("hkuyu");
+        System.out.println("hkuyu"+getSearchMenu());
         //    vendorhlst=vendordao.allVendor();
         itemlst=getItemlst();
           //   itemnamelst=itemdao.allItem();
@@ -362,38 +460,62 @@ public class SearchActionBean extends BaseActionBean{
               {
                     hdnvalue="receipt";
                  search="byStoreIssueNo";
+                 searchMenu="byStoreIssue";
+                 searchSubmenu="siNumber";
                      no=Long.parseLong(getName());
-            storeissuelst=storeissuedao.searchByName(no);
+            storeissuelst=storeissuedao.searchBySiId(no);
               }
           if(hdnvalue.equals("testpurchase"))
               {
                  System.out.println("hkuyuiftest");
                     hdnvalue="receiptpurchase";
                  search="byPurchaseOrder";
+               //   searchMenu="byPurchaseOrder";
+                // searchSubmenu="poNumber";
            purchaseOrderlst=purchaseorderdao.searchByName(getName());
               }
-
-        
-      //  storeissuelst=getStoreissuelst();
-
-      //  tempSI=storeissuedao.allStoreIssue();
-    //    purchaseOrderlst=getPurchaseOrderlst();
-
-            // PurchaseOrderNolst=purchaseorderdao.getAllPurchaseOrderNo();
-        return new ForwardResolution("jsp/search.jsp");
+     if(hdnvalue.equals("testgrn"))
+              {
+                 System.out.println("in slip gRN");
+                    hdnvalue="receiptgrn";
+                    search="byGrn";
+                  searchMenu="byGrn";
+                 searchSubmenu="grnNumber";
+           grnlst=grndao.searchByGrnNumber(getId());
+              }
+    return new ForwardResolution("jsp/search.jsp");
     }
      @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
      public Resolution redirectpopup()
    {
         storeissue=storeissuedao.findById(getId());
+
          storeissuelst=getStoreissuelst();
        return new ForwardResolution("jsp/receipt/storeIssueSlip.jsp");
    }
      @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
+     public Resolution redirectgrnpopup()
+   {
+         
+       tot=0.0;
+
+             grn=grndao.findById(getId());
+
+
+             Iterator<GrnDetail> it=grn.getGrndetailarray().iterator();
+             while (it.hasNext())
+             {
+                 tot=tot+it.next().getValue();
+             }
+
+
+         return new ForwardResolution("jsp/receipt/searchGrnSlip.jsp");
+   }
+     @RolesAllowed({PermissionConstants.ADD_SEARCH,PermissionConstants.UPDATE_SEARCH,PermissionConstants.DELETE_SEARCH})
      public Resolution redirectpurchase()
-   {       
+   {        term=termdao.findById(getId());
            purchaseOrder=purchaseorderdao.findById(getId());
-           return new ForwardResolution("jsp/printPurchaseOrder.jsp");
+           return new ForwardResolution("jsp/receipt/purchaseOrderSlip.jsp");
    }
 
 }

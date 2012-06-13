@@ -55,7 +55,7 @@
 
 			<br >
 
-			<stripes:submit  style="margin: 0 0 0 287px;" class="button" name="login" value="Login"/>
+			<stripes:submit  style="margin: 0 0 0 287px;" class="button" name="trialPeriod" value="Login"/>
 		</fieldset>
 
       <div style="margin-top:25px;margin-left:200px;font-size:13px;font-family:Verdana;color:red;">

@@ -19,8 +19,8 @@
           <c:if test="${listoforder.test eq TR2}">
 <script type="text/javascript">
    function OpenPopup(){
-       var w = 750;
-       var h = 450;
+       var w = 800;
+       var h = 480;
        var winl = (screen.width-w)/2;
        var wint = (screen.height-h)/2;
        if (winl < 0) winl = 0;
@@ -38,8 +38,8 @@
           <c:if test="${listoforder.test eq TR2}">
 <script type="text/javascript">
    function OpenPopup(){
-       var w = 750;
-       var h = 450;
+       var w = 800;
+       var h = 480;
        var winl = (screen.width-w)/2;
        var wint = (screen.height-h)/2;
        if (winl < 0) winl = 0;
@@ -80,7 +80,7 @@
                     {
                         $.post('PurchaseOrder.action?getItemDetails', {id:button.value}, function (data) {
                             var result=eval(data);
-                            $('#item'+rowid+'').attr("value",result.name);
+                            $('#item'+rowid+'').attr("value",result.itemCode);
                             $('#uom'+rowid+'').attr("value",result.uom.name);
                             });//end of post funtion
                     }//end of flag==true if
@@ -273,11 +273,11 @@
         <td colspan="4"><br><div align="left" style="margin-left:10px;">
 				<table width="95%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #000000;" align="left" id="family">
 					<tr>
-						<td width="12%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item Code</span></strong></div></td>
-					    <td width="20%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item name</span></strong></div></td>
-					    <td width="9%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Uom</span></strong></div></td>
+						<td width="12%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item name</span></strong></div></td>
+					    <td width="20%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item Code</span></strong></div></td>
+					    <td width="9%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">UoM</span></strong></div></td>
 					    <td width="12%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Description</span></strong></div></td>
-					    <td width="13%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Order Qty</span></strong></div></td>
+					    <td width="13%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Ordered Qty</span></strong></div></td>
                         <td width="12%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Rate</span></strong></div></td>
 					    <td width="5%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Amount</span></strong></div></td>
                         <td width="5%"  style=" background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;"><img src="/images/Cfthrow.gif"></span></strong></div></td>
@@ -290,7 +290,7 @@
                                    <s:select id="itemcode${i}" name="purchasedetailarray[${i}].item.id"  onchange= "return GetItemDetail(this);">
                         <option  value="0">---Select Item---</option>
               <c:forEach items="${itemidlst}" var="itemidloop" varStatus="loop" >
-               <option value ="${itemidloop.id}"><c:out value="${itemidloop.itemCode}"/></option>
+               <option value ="${itemidloop.id}"><c:out value="${itemidloop.name}"/></option>
 		      </c:forEach>
                 </s:select>
 					          </div></div></td>

@@ -42,7 +42,7 @@ Item Management > Delete Item
                     <d:table name="itemlst" id="item1" pagesize="10" class="disp" requestURI="/Item.action">
                  <d:column property="itemCode" title="Item Code"/>
                  <d:column property="name" title="Item Name"  />
-                  <d:column property="uom.name" title="UOM" />
+                  <d:column property="uom.name" title="UoM" />
                  <d:column property="section.name" title="Section" />
                                 <d:column title="Delete" class="delete">
 

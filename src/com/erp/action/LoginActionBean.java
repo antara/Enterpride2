@@ -3,6 +3,7 @@ package com.erp.action;
 import net.sourceforge.stripes.action.*;
 
 import com.erp.exception.LoginException;
+import com.erp.pojo.Traildate;
 
 import javax.servlet.http.HttpSession;
 
@@ -32,6 +33,22 @@ public class LoginActionBean extends BaseActionBean{
 
 
     }
+
+     public Resolution trialPeriod()
+    {
+
+
+
+        if(datedao.checkPeriod(new Traildate())==1)
+        {
+         
+
+            return login();
+
+        }
+           getContext().getMessages().add(new SimpleMessage("Trial period is over"));
+            return new  ForwardResolution("/jsp/login.jsp");
+    } 
 
     public Resolution logout(){
         getContext().logout();

@@ -5,6 +5,7 @@ import com.erp.dao.BaseDao;
 import com.erp.pojo.Requisition;
 import com.erp.pojo.RequisitionDetail;
 import com.erp.pojo.PurchaseOrder;
+import com.erp.pojo.DailyStockRecord;
 import com.wideplay.warp.persist.Transactional;
 
 import java.util.List;
@@ -26,37 +27,37 @@ public class RequisitionDaoImpl extends BaseDao implements RequisitionDao {
 
     @Transactional
     public boolean SaveRequisition(Requisition requisition, List<RequisitionDetail> requisitiondetail) {
-     try {
+        try {
 
-         for(Iterator<RequisitionDetail> i=requisitiondetail.iterator();i.hasNext();){
-             RequisitionDetail r=(RequisitionDetail)i.next();
+            for(Iterator<RequisitionDetail> i=requisitiondetail.iterator();i.hasNext();){
+                RequisitionDetail r=(RequisitionDetail)i.next();
 
-             if(r==null){
-                 i.remove();
+                if(r==null){
+                    i.remove();
 
-             }else if(r.getRequiredQty()==null){
-                 i.remove();
-             }
-         }
-            
+                }else if(r.getRequiredQty()==null){
+                    i.remove();
+                }
+            }
+
             if(requisition!=null){
-                 if (requisition.getRequisitionDate() == null) requisition.setRequisitionDate(new Date());
-               Long q=(Long)getSession().createQuery("select max(id) from Requisition").uniqueResult();
-                        //int mId=m.getMemberId();
+                if (requisition.getRequisitionDate() == null) requisition.setRequisitionDate(new Date());
+                Long q=(Long)getSession().createQuery("select max(id) from Requisition").uniqueResult();
+//int mId=m.getMemberId();
 
-                        if(q==null)
-                        {
-                          requisition.setId(1000l);
-                        }
-                        else
-                        {
+                if(q==null)
+                {
+                    requisition.setId(1000l);
+                }
+                else
+                {
 
-                           requisition.setId(q+1);
+                    requisition.setId(q+1);
 
-                        }
+                }
                 requisition.setRequisitiondetailarray(requisitiondetail);
-               getSession().save(requisition);
-                
+                getSession().save(requisition);
+
                 return true;
             }else{
                 return false;
@@ -64,85 +65,53 @@ public class RequisitionDaoImpl extends BaseDao implements RequisitionDao {
         }catch (Exception e){
             e.printStackTrace();
             return false;
-        }finally{
-          //  getSession().close();
         }
 
     }
-                  @Transactional
+    @Transactional
     public void update(Requisition requisition, List<RequisitionDetail> requisitiondetail) {
         try{
-                    for(Iterator<RequisitionDetail> i=requisitiondetail.iterator();i.hasNext();){
-                        RequisitionDetail g=(RequisitionDetail)i.next();
+            for(Iterator<RequisitionDetail> i=requisitiondetail.iterator();i.hasNext();){
+                RequisitionDetail g=(RequisitionDetail)i.next();
 
-                        if(g==null){
-                            i.remove();
+                if(g==null){
+                    i.remove();
 
-                        }else if(g.getRequiredQty()==null){
-                            i.remove();
-                        }
-                    }
-        
-                requisition.setRequisitiondetailarray(requisitiondetail);
-               getSession().update(requisition);
-                
+                }else if(g.getRequiredQty()==null){
+                    i.remove();
+                }
+            }
 
-
+            requisition.setRequisitiondetailarray(requisitiondetail);
+            getSession().update(requisition);
         }catch (Exception e){
             e.printStackTrace();
 
-        }finally{
-          /*if(getSession().isOpen()){
-              getSession().flush();
-              getSession().close();
-          }*/
         }
     }
 
     @Transactional
     public List getRequisition() {
-             String hql="from Requisition";
-            // List list=null;
-             try {
-
-                     
-
-
-             }catch (Exception e){
-                 e.printStackTrace();
-
-             }finally{
-               //  s.close();
-             }
-              return getSession().createQuery(hql).list();
-
-            }
-
-    
-                                              @Transactional
+        return getSession().createQuery("From Requisition").list();
+    }
+    @Transactional
     public Requisition findById(Long id) {
-
         return (Requisition)getSession().createCriteria(Requisition.class).add(Restrictions.eq("id",id)).uniqueResult();
     }
 
-      public  Requisition latestrequisition()
-      {
-          String hql="from Requisition where id=(select max(id) from Requisition)";
-                 try {
+    public  Requisition latestrequisition()
+    {
+        return (Requisition)getSession().createQuery("from Requisition where id=(select max(id) from Requisition)").uniqueResult();
 
+    }
 
-
-
-                  }catch (Exception e){
-                      e.printStackTrace();
-
-                  }finally{
-                    //  s.close();
-                  }
-                   return (Requisition)getSession().createQuery(hql).uniqueResult();
-
-             }
-
-
-      }
+    public Requisition getRequisitionWithAvailableQuantity(Requisition req) {
+        for(Iterator<RequisitionDetail> ird=req.getRequisitiondetailarray().iterator();ird.hasNext();){
+            RequisitionDetail rd=ird.next();
+            Double closing_quantity=(Double)getSession().createSQLQuery("select closing_quantity from daily_stock where create_date=(select max(create_date) from daily_stock where item_id="+rd.getItem().getId()+")").uniqueResult();
+            rd.setAvailableQuantity(closing_quantity==null?0.0:closing_quantity);
+        }
+        return req;
+    }
+}
 

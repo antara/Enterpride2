@@ -11,10 +11,10 @@
  <%@ taglib prefix="ajax" uri="http://ajaxtags.sourceforge.net/tags/ajaxtags" %>
 <script type="text/javascript" src="/js/jquery.js"></script>
 <link href="/css/CalendarControl.css" rel="stylesheet" type="text/css">
-<link type="text/css" rel="stylesheet" href="/css/ui.autocomplete.css" />
-     <%--<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>--%>
+
+     <script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
         <script type="text/javascript" src="/js/ui.core.min.js"></script>
-        <script type="text/javascript" src="/js/ui.autocomplete.min.js"></script>
+        
 <script src="/js/CalendarControl.js" language="javascript"> </script>
  <script type="text/javascript" src="/js/script.js"></script>
  <script type="text/javascript" src="/js/jquery-ui.min.js"></script>

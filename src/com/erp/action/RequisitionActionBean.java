@@ -32,7 +32,6 @@ public class RequisitionActionBean extends BaseActionBean{
      private List<RequisitionDetail> requisitiondetailarray = new ArrayList<RequisitionDetail>();
       private int requisitionid ;
        private List requisitionIds;
-      
 
     public int getRequisitionid() {
         return requisitionid;
@@ -116,18 +115,12 @@ public class RequisitionActionBean extends BaseActionBean{
     //Add requisition
     public Resolution addrequisition()
     {
-        System.out.println("getRequisition()"+getRequisition());
+       
         requisitiondao.SaveRequisition(getRequisition(),requisitiondetailarray);
 
         requisitionIds=storeissuedao.requisitionIds();
         itemidlst= itemdao.getItem();
 
-        System.out.println("id"+id);
-        System.out.println("requisition"+requisition);
-        System.out.println("requisitionIds"+requisitionIds);
-        System.out.println("itemidlst"+itemidlst);
-        System.out.println("getRequisition()"+getRequisition());
-        System.out.println("requisitiondetailarray"+requisitiondetailarray);
         return new RedirectResolution("jsp/redirectStoreIssue.jsp");
         
     }

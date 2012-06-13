@@ -13,8 +13,12 @@ import java.util.List;
  */
 public interface RoleDao {
     public List getRole();
+
     public boolean SaveRole(Role section);
+
     public Role findById(Long id);
+
     void delete(Role role);
+
     void update(Role role);
 }

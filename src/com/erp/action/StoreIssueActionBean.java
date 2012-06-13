@@ -1,16 +1,18 @@
 package com.erp.action;
 
-import com.erp.pojo.*;
+import com.erp.pojo.Requisition;
+import com.erp.pojo.Item;
+import com.erp.pojo.StoreIssueDetail;
+import com.erp.pojo.StoreIssue;
 import com.erp.constants.PermissionConstants;
+import com.erp.utils.Converter;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.FileInputStream;
 
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.HttpCache;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.ajax.JavaScriptResolution;
 
 import javax.annotation.security.RolesAllowed;
@@ -36,23 +38,22 @@ public class StoreIssueActionBean extends BaseActionBean{
      private  String popup=null;
      private Double itemcode;
      private Double dailystockval;
-     private DailyStockRecord dailystock;
-     private Long forid;
+       private String content;
+        private String storeNo;
 
-    public Long getForid() {
-        return forid;
+    public String getStoreNo() {
+        return storeNo;
     }
 
-    public void setForid(Long forid) {
-        this.forid = forid;
+    public void setStoreNo(String storeNo) {
+        this.storeNo = storeNo;
+    }
+    public String getContent() {
+        return content;
     }
 
-    public DailyStockRecord getDailystock() {
-        return dailystock;
-    }
-
-    public void setDailystock(DailyStockRecord dailystock) {
-        this.dailystock = dailystock;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Double getItemcode() {
@@ -165,16 +166,11 @@ public class StoreIssueActionBean extends BaseActionBean{
     }
      public Resolution redirectLink()
     {
-        requisitionlst=storeissuedao.getRequisition();
-        requisitionIds=storeissuedao.requisitionIds();
-        issuedids=storeissuedao.issuedids();
-        requisition=requisitiondao.latestrequisition();
-        
-        System.out.println("requisition"+requisition);
+        requisition=requisitiondao.getRequisitionWithAvailableQuantity(requisitiondao.latestrequisition());
+
         itemidlst= itemdao.getItem();
-        System.out.println("item"+itemidlst);
-       
-        System.out.println("in redirectLink dailystock"+dailystock);
+
+        
         return new ForwardResolution("jsp/addStoreIssue.jsp");
     }
 
@@ -182,7 +178,8 @@ public class StoreIssueActionBean extends BaseActionBean{
     //redirect to add store issue page by requisition id
     public Resolution addStoreIssue()
     {
-        requisition=requisitiondao.findById(id);
+        requisition=requisitiondao.getRequisitionWithAvailableQuantity(requisitiondao.findById(id));
+        
         requisitionIds=storeissuedao.requisitionIds();
         itemidlst= itemdao.getItem();
         return new ForwardResolution("jsp/addStoreIssue.jsp");
@@ -244,5 +241,20 @@ public class StoreIssueActionBean extends BaseActionBean{
          storeissue=storeissuedao.latestStoreIssue();
        return new ForwardResolution("jsp/receipt/storeIssueSlip.jsp");
    }
+
+   public Resolution print(){
+        String path=null;
+        FileInputStream sis=null;
+        try{
+         
+            path= Converter.convert(content,storeNo);
+            sis=new FileInputStream(path);
+        }catch(Exception e){
+            System.out.println("achtung "+e.getMessage());
+        }
+
+
+        return new StreamingResolution("application/pdf",sis);
+    }
 
 }

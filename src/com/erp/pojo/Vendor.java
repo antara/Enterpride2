@@ -47,15 +47,15 @@ public class Vendor {
    private String servicetax;
     @Column(name = "pan_no")
    private String panno;
-     @Column(name = "item_code")
-      private String itemCode;
+     @Column(name = "vendor_code")
+      private String vendorCode;
 
-    public String getItemCode() {
-        return itemCode;
+    public String getVendorCode() {
+        return vendorCode;
     }
 
-    public void setItemCode(String itemCode) {
-        this.itemCode = itemCode;
+    public void setVendorCode(String vendorCode) {
+        this.vendorCode = vendorCode;
     }
 
     public String getPanno() {
@@ -202,9 +202,10 @@ public class Vendor {
                 ", ifscCode='" + ifscCode + '\'' +
                 ", createDate=" + createDate +
                 ", deleted=" + deleted +
-                ", salestax=" + salestax +
-                ", servicetax=" + servicetax +
-                ", panno=" + panno +
+                ", salestax='" + salestax + '\'' +
+                ", servicetax='" + servicetax + '\'' +
+                ", panno='" + panno + '\'' +
+                ", vendorCode='" + vendorCode + '\'' +
                 '}';
     }
 }

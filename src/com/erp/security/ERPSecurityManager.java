@@ -16,6 +16,7 @@ import com.erp.pojo.RolePermissions;
 import com.erp.pojo.UserPermissions;
 import com.erp.action.BaseActionBean;
 import com.erp.action.LoginActionBean;
+import com.erp.constants.PermissionConstants;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,6 +34,7 @@ public class ERPSecurityManager extends InstanceBasedSecurityManager implements 
 
         if(user!=null){
             Role role=user.getRole();
+
             if(role.getName().equalsIgnoreCase("superadmin")){
                 return true;
             }
@@ -42,26 +44,32 @@ public class ERPSecurityManager extends InstanceBasedSecurityManager implements 
     }
 
     public Boolean checkModule(User user,String role){
-        boolean flag=false;
+        boolean rolePermission=false;
 
-        for(Iterator<UserPermissions> i=user.getUserPermissions().iterator();i.hasNext();){
-                    UserPermissions userPermissions =i.next();
-                        if(role.contains(userPermissions.getName())){
-                            if(userPermissions.getAdd()==null && userPermissions.getUpdate()==null && userPermissions.getDelete()==null){
-                            flag=true;
-                        }else{
-                                break;
-                            }
+        if(user.getUserPermissions().isEmpty()){
+            rolePermission=true;
+        }else{
+            for(Iterator<UserPermissions> i=user.getUserPermissions().iterator();i.hasNext();){
+                UserPermissions userPermissions =i.next();
+                if(role.contains(userPermissions.getName())){
+                    if(userPermissions.getAdd()==null && userPermissions.getUpdate()==null && userPermissions.getDelete()==null){
+                        rolePermission=true;
+                    }else{
+                        rolePermission=false;
+                        break;
                     }
-
                 }
 
-        if(flag){
+            }
+
+        }
+
+        if(rolePermission){
             if(role.contains("ADD")){
                 for(Iterator<RolePermissions> i=user.getRole().getRolePermissions().iterator();i.hasNext();){
                     RolePermissions rolePermissions =i.next();
-                        if(role.contains(rolePermissions.getName())){
-                            if(rolePermissions.getAdd()!=null && rolePermissions.getAdd().equalsIgnoreCase("true")){
+                    if(role.contains(rolePermissions.getName())){
+                        if(rolePermissions.getAdd()!=null && rolePermissions.getAdd().equalsIgnoreCase("true")){
                             return true;
                         }
                     }
@@ -71,32 +79,33 @@ public class ERPSecurityManager extends InstanceBasedSecurityManager implements 
             }else if(role.contains("UPDATE")){
                 for(Iterator<RolePermissions> i=user.getRole().getRolePermissions().iterator();i.hasNext();){
                     RolePermissions rolePermissions =i.next();
-                        if(role.contains(rolePermissions.getName())){
-                            if(rolePermissions.getUpdate()!=null && rolePermissions.getUpdate().equalsIgnoreCase("true")){
+                    if(role.contains(rolePermissions.getName())){
+                        if(rolePermissions.getUpdate()!=null && rolePermissions.getUpdate().equalsIgnoreCase("true")){
                             return true;
                         }
                     }
 
                 }
             }else if(role.contains("DELETE")){
-                    for(Iterator<RolePermissions> i=user.getRole().getRolePermissions().iterator();i.hasNext();){
-                        RolePermissions rolePermissions =i.next();
-                            if(role.contains(rolePermissions.getName())){
-                                if(rolePermissions.getDelete()!=null && rolePermissions.getDelete().equalsIgnoreCase("true")){
-                                return true;
-                            }
+                for(Iterator<RolePermissions> i=user.getRole().getRolePermissions().iterator();i.hasNext();){
+                    RolePermissions rolePermissions =i.next();
+                    if(role.contains(rolePermissions.getName())){
+                        if(rolePermissions.getDelete()!=null && rolePermissions.getDelete().equalsIgnoreCase("true")){
+                            return true;
                         }
-
                     }
 
+                }
+
             }
+
             return false;
         }else{
             if(role.contains("ADD")){
                 for(Iterator<UserPermissions> i=user.getUserPermissions().iterator();i.hasNext();){
                     UserPermissions userPermissions =i.next();
-                        if(role.contains(userPermissions.getName())){
-                            if(userPermissions.getAdd()!=null && userPermissions.getAdd().equalsIgnoreCase("true")){
+                    if(role.contains(userPermissions.getName())){
+                        if(userPermissions.getAdd()!=null && userPermissions.getAdd().equalsIgnoreCase("true")){
                             return true;
                         }
                     }
@@ -106,8 +115,8 @@ public class ERPSecurityManager extends InstanceBasedSecurityManager implements 
             }else if(role.contains("UPDATE")){
                 for(Iterator<UserPermissions> i=user.getUserPermissions().iterator();i.hasNext();){
                     UserPermissions userPermissions =i.next();
-                        if(role.contains(userPermissions.getName())){
-                            if(userPermissions.getUpdate()!=null && userPermissions.getUpdate().equalsIgnoreCase("true")){
+                    if(role.contains(userPermissions.getName())){
+                        if(userPermissions.getUpdate()!=null && userPermissions.getUpdate().equalsIgnoreCase("true")){
                             return true;
                         }
                     }
@@ -116,8 +125,8 @@ public class ERPSecurityManager extends InstanceBasedSecurityManager implements 
             }else if(role.contains("DELETE")){
                 for(Iterator<UserPermissions> i=user.getUserPermissions().iterator();i.hasNext();){
                     UserPermissions userPermissions =i.next();
-                        if(role.contains(userPermissions.getName())){
-                            if(userPermissions.getDelete()!=null && userPermissions.getDelete().equalsIgnoreCase("true")){
+                    if(role.contains(userPermissions.getName())){
+                        if(userPermissions.getDelete()!=null && userPermissions.getDelete().equalsIgnoreCase("true")){
                             return true;
                         }
                     }
@@ -129,7 +138,7 @@ public class ERPSecurityManager extends InstanceBasedSecurityManager implements 
 
         return false;
     }
-    
+
 
     @Override
     protected Boolean isUserAuthenticated(ActionBean actionBean, Method method) {
@@ -146,7 +155,7 @@ public class ERPSecurityManager extends InstanceBasedSecurityManager implements 
 
             return resolution;
         }
-        return new ErrorResolution(HttpServletResponse.SC_UNAUTHORIZED); 
+        return new ErrorResolution(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
 

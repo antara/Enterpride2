@@ -14,16 +14,38 @@ import java.util.List;
  */
 public interface PurchaseOrderDao {
     public boolean SavePurchaseOrder(PurchaseOrder purchaseOrder, List<PurchaseOrderDetail> purchasedetail);
-       public List<PurchaseOrder> getPurchaseOrder();
-       public void update(PurchaseOrder purchaseOrder,List<PurchaseOrderDetail> purchasedetail);
-     public PurchaseOrder findById(Long id);
-     public void deletePO( PurchaseOrder purchaseOrder);
+
+    public List<PurchaseOrder> getPurchaseOrder();
+
+    public void update(PurchaseOrder purchaseOrder,List<PurchaseOrderDetail> purchasedetail);
+
+    public PurchaseOrder findById(Long id);
+
+    public void deletePO( PurchaseOrder purchaseOrder);
+
     public PurchaseOrder latestPurchaseOrder();
+
     public void generatePurchaseOrder(PurchaseOrder purchaseOrder,List<PurchaseOrderDetail> purchasedetailarray);
+
     public List<String> getAllPurchaseOrderNo();
+
     public List<String> allPOnoForSearch();
+
     public List<PurchaseOrder> searchByName(String n);
-     public List<PurchaseOrder> getPoByStatus();
+
+    public List<PurchaseOrder> getPoByStatus();
+
+    public  List<String> getPoVendorNameLst();
+
+    public List<String> getPoVendorIdLst();
+
+    public List<PurchaseOrder> searchByPoVendorName(String vendorname);
+
+    public List<PurchaseOrder> searchByPoVendorId(String vendorcode);
+
+    public List<PurchaseOrder> searchByPoDate(String sdate);
+
+    public List<PurchaseOrder> searchByFromTo(String fromdate, String todate);
 }
 
 

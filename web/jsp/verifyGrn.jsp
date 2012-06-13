@@ -1,3 +1,5 @@
+<%@ page import="com.erp.dao.UserDao" %>
+<%@ page import="com.erp.guice.InjectorFactory" %>
 <%--
   Created by IntelliJ IDEA.
   User: Minal
@@ -45,6 +47,7 @@ else
 <% request.setAttribute("grnlist",grnBean.getGrnlst());
 
 %>
+
 <s:layout-render name="/layout/_base.jsp">
       <s:layout-component name="body">
           <s:form beanclass="com.erp.action.GrnActionBean">
@@ -52,7 +55,7 @@ else
  <tr valign="top"><td >&nbsp;
  </td></tr>
  <tr><td align="left" class="pageheading" valign="top">
-GRN Management > Verify GRN
+GRN Management > Unapproved GRNs
  </td></tr>
  <tr valign="top"><td align="center">&nbsp;
  </td></tr>
@@ -61,9 +64,14 @@ GRN Management > Verify GRN
                     <d:table name="grnlist" id="grn1" pagesize="10" class="disp" requestURI="/Grn.action?verify">
                  <d:column property="id" title="GRN No."/>
                  <d:column property="purchaseOrder.purchaseOrderNo" title="PO No."/>
-                     
+
                         <d:column property="orderDate" title="Date"   format="{0,date,yyyy-MM-dd}" sortable="false"/>
                         <d:column property="status" title="Status"/>
+
+                        <%
+                            Long id=(Long)request.getSession().getAttribute("user");
+                        String role= InjectorFactory.getInjector().getInstance(UserDao.class).findById(id).getRole().getName();
+                            if(!role.toLowerCase().contains("account")){%>
                         <d:column title="Verify and Proceed for Payment" class="delete">
                              <s:link beanclass="com.erp.action.GrnActionBean" event="proceedForPayment" onclick="return show_confirm();" >
                                   <s:param name="id" value="${grn1.id}"></s:param>
@@ -72,6 +80,7 @@ GRN Management > Verify GRN
                                   <img src="/images/view.png" />   </s:link>
 
                         </d:column>
+                        <%}%>
                      </d:table></td></tr></table>
 
  </s:form></s:layout-component></s:layout-render>

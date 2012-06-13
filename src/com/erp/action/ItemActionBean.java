@@ -181,7 +181,7 @@ public Resolution checkItemAlreadyPresent()
       @RolesAllowed({PermissionConstants.UPDATE_ITEM})
     //Update a item
      public Resolution updateitem(){
-           System.out.println("jjjj"+item);
+       
        itemdao.update(item);
                 itemlst=itemdao.getItem();
         return new RedirectResolution("jsp/updateItem.jsp");

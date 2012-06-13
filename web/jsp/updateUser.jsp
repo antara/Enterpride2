@@ -7,7 +7,7 @@
 --%>
 <%@ include file="/includes/_taglibInclude.jsp" %>
 <link rel="stylesheet" href="/css/general.css" type="text/css" media="screen" />
-    <script src="http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js" type="text/javascript"></script>
+   
     <script src="/js/popup.js" type="text/javascript"></script>
  <script type="text/javascript" src="/js/jquery.js"></script>
  <script type="text/javascript">

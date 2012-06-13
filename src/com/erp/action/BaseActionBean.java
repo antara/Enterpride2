@@ -5,6 +5,7 @@ import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.validation.ValidateNestedProperties;
 import net.sourceforge.stripes.validation.Validate;
 import com.erp.pojo.User;
+import com.erp.pojo.Traildate;
 import com.erp.dao.*;
 import com.erp.security.MyActionBeanContext;
 import com.erp.utils.PasswordEncryptor;
@@ -43,14 +44,23 @@ public class BaseActionBean implements ActionBean{
     @Inject  protected UomDao uomdao;
     @Inject  protected VendorDao vendordao;
     @Inject  protected GrnDao grndao;
-    @Inject  protected GrnDetailDao grndetaildao;
+       @Inject  protected TermDao termdao;
     @Inject protected RequisitionDao requisitiondao;
     @Inject protected RoleDao roledao;
     @Inject protected StoreIssueDao storeissuedao;
     @Inject protected RolePermissionsDao rolepermissionsdao;
     @Inject protected PurchaseOrderDao purchaseorderdao;
+     @Inject protected DateDao datedao;
 
-    
+     protected Traildate traildate;
+
+    public Traildate getTraildate() {
+        return traildate;
+    }
+
+    public void setTraildate(Traildate traildate) {
+        this.traildate = traildate;
+    }
     protected long id;
 
     public long getId() {

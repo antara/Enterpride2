@@ -27,9 +27,18 @@ public class ReportActionBean extends BaseActionBean{
     private int y;
     private String itemcodetxt;
     private String sdate;
-    private List<DailyStockRecord> dailystocktoday;
+    private List<DailyStockRecord> dailystocktoday,dailyLedger;
     private List dailystock;
     private List<String> itemcodelst;
+   
+
+    public List<DailyStockRecord> getDailyLedger() {
+        return dailyLedger;
+    }
+
+    public void setDailyLedger(List<DailyStockRecord> dailyLedger) {
+        this.dailyLedger = dailyLedger;
+    }
 
     public String getFromdate() {
         return fromdate;
@@ -145,7 +154,7 @@ public class ReportActionBean extends BaseActionBean{
     }
     public Resolution getItemCodeLst()
     {
-        itemcodelst=itemdao.getItemCodelst();
+        itemcodelst=itemdao.getItemNamelst();
 
         return new JavaScriptResolution(itemcodelst);
     }
@@ -192,7 +201,8 @@ public Resolution bySelectDate() {
     }
     @RolesAllowed({PermissionConstants.ADD_REPORT,PermissionConstants.UPDATE_REPORT,PermissionConstants.DELETE_REPORT})
 public Resolution byDailyLedger() {
-        dailystock=storeissuedao.getDailyStockByItemCode(getItemcodetxt());
+
+        dailyLedger=storeissuedao.getDailyStockByItemCode(getItemcodetxt(),getMonth(),getYear());
 
         return new ForwardResolution("jsp/report.jsp");
     }

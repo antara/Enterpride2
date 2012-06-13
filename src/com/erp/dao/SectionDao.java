@@ -12,10 +12,14 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface SectionDao {
-     public List getSection();
-    public boolean SaveSection(Section section);
-    public void delete(Section section);
-     public void update(Section section);
-    public Section findById(Long id);
+    public List getSection();
     
+    public boolean SaveSection(Section section);
+
+    public void delete(Section section);
+
+    public void update(Section section);
+
+    public Section findById(Long id);
+
 }

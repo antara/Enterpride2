@@ -8,7 +8,7 @@
                    var rowid=button.name.substring(button.name.indexOf("[")+1,button.name.indexOf("]"));
         $.post('Requisition.action?getItemDetails', {id:button.value}, function (data) {
         var result=eval(data);
-        $('#item'+rowid+'').attr("value",result.name);
+        $('#item'+rowid+'').attr("value",result.itemCode);
         $('#uom'+rowid+'').attr("value",result.uom.name);
 
     });
@@ -141,9 +141,9 @@ Material Requisition > Add
         <td colspan="4"><br><div align="left" style="margin-left:10px;">
 				<table width="90%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #000000;" align="left" id="family">
 					<tr>
-						<td width="20%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item Code</span></strong></div></td>
-					    <td width="25%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item name</span></strong></div></td>
-					   <td width="15%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Uom</span></strong></div></td>
+						<td width="25%" height="28px" style="border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;" >Item name</span></strong></div></td>
+					    <td width="20%"  style="border-right:1px solid #000000; background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Item Code</span></strong></div></td>
+					   <td width="15%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">UoM</span></strong></div></td>
                           <td width="15%"  style=" border-right:1px solid #000000;background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;">Requested Quantity</span></strong></div></td>
                           <td width="15%"  style=" background:#FFCC66;"><div align="center"><strong><span style="color:#3B3131;font-size:13px;font-weight:bold;"><img src="/images/Cfthrow.gif"  name="delete"></span></strong></div></td>
 					    
@@ -158,14 +158,12 @@ Material Requisition > Add
                                    <s:select id="itemcode" name="requisitiondetailarray[${i}].item.id"  onchange= "return GetItemDetail(this);">
                         <option  value="0">---Select Item---</option>
               <c:forEach items="${itemidlst}" var="itemidloop" varStatus="loop" >
-                  <option value ="${itemidloop.id}"><c:out value="${itemidloop.itemCode}"/></option>
-
+               <option value ="${itemidloop.id}"><c:out value="${itemidloop.name}"/></option>
 		      </c:forEach>
-</s:select>
 
+                </s:select>
 					         <%--   <s:text name="grndetailarray[${i}].item.id"  style="text-align:right;margin-right:2px;width:100px; "  />--%>
 					          </div></div></td>
-                             
 					       <td style="border-top:1px solid #000000;border-right:1px solid #000000;"><div align="left" style="margin-left:4px;">
 					         <div align="right">
 					           <s:text name="requisitiondetail.itemName" readonly="readonly" id="item${i}" class="hello" style="text-align:right;margin-right:2px; width:200px; "  />

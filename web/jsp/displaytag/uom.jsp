@@ -7,7 +7,7 @@ request.setAttribute("uomlst",listofitems.getUomlst());
 %>
 <div style="height:250px;overflow-y:auto">
 <d:table name="uomlst" class="disp" id="uom1" requestURI="/Uom.action?paginationUom">
-<d:column property="name" title="Uom Name" />
+<d:column property="name" title="UoM Name" />
                   <d:column  title="update">
                         <s:link beanclass="com.erp.action.UomActionBean" event="readname" onclick= "return updateLinkuom(this);">
                            <s:param name="id" value="${uom1.id}"></s:param>
